@@ -1,0 +1,23 @@
+---
+description: Prose style for shore excursion sites (no em dashes)
+alwaysApply: true
+---
+
+# Shore excursion copy style
+
+When writing or editing marketing copy, page content, excursion descriptions, FAQs, alt text, or metadata for shore excursion websites:
+
+- Do **not** use em dashes (—) or en dashes as sentence punctuation (–).
+- Use commas, full stops, or "and" / "to" instead.
+  - Clause break: use a comma or new sentence, not an em dash.
+  - Ranges: write `3 to 4 hours`, `May to August`, not `3–4` or `May–August`.
+- Empty UI placeholders: use `Not set` or a hyphen, never `—`.
+- Prefer short, direct sentences that read like human travel copy, not AI listicles.
+
+Examples:
+
+- Bad: `Confirm times on your voucher the night before — especially when busy.`
+- Good: `Confirm times on your voucher the night before, especially when busy.`
+
+- Bad: `Approx. 2–4 hours`
+- Good: `Approx. 2 to 4 hours`
