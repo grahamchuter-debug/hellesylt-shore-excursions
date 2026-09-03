@@ -37,9 +37,9 @@ export const privateMountStrandaPanoramicViewsExcursion: ExcursionData = {
   ],
   gallery: [
     { src: siteImages.ljoeenViewpoint, alt: imageAlts.ljoeenViewpoint },
-    { src: siteImages.mountStranda, alt: imageAlts.mountStranda },
     { src: siteImages.sunnylvsfjord, alt: imageAlts.sunnylvsfjord },
     { src: siteImages.hellesyltWaterfall, alt: imageAlts.hellesyltWaterfall },
+    { src: siteImages.hellesyltVillage, alt: imageAlts.hellesyltVillage },
   ],
   highlights: [
     "Private transport from Hellesylt cruise port",
@@ -89,5 +89,5 @@ export const privateMountStrandaPanoramicViewsExcursion: ExcursionData = {
     },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
+  bookingLabel: "Explore this excursion",
 };

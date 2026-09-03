@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf8f3;
-  --foreground: #152238;
-  --surface-muted: #eef1f4;
-  --navy: #0c1829;
-  --navy-deep: #060f18;
-  --norway-blue: #3d8fd9;
-  --norway-blue-hover: #2d7fc4;
-  --norway-red: #3d6b52;
-  --village-cream: #f5f0e6;
-  --border-light: #c8d0d8;
+  /* Hellesylt: waterfall slate + soft spruce accent. Not Geiranger spruce-primary, not Eidfjord mist-green. */
+  --background: #e6eaee;
+  --foreground: #1a242c;
+  --surface: #f2f5f7;
+  --surface-muted: #d8dee4;
+  --navy: #1c2833;
+  --navy-deep: #111920;
+  --fjord: #3d5a4c;
+  --fjord-soft: #4d6f5e;
+  --harbour: #6b7c8c;
+  --accent: #6b7c8c;
+  --accent-soft: #8a9aaa;
+  --border-light: #c0c8d0;
+  --norway-blue: #3d5a4c;
+  --norway-blue-hover: #2f463c;
+  --norway-red: #6b7c8c;
+  --gold: #6b7c8c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-surface-muted: var(--surface-muted);
   --color-norway-blue: var(--norway-blue);
   --color-norway-red: var(--norway-red);
-  --color-surface-muted: var(--surface-muted);
   --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-source-serif);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -28,6 +37,16 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fjord);
+  outline-offset: 2px;
+}
+
+.font-display {
+  font-family: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  letter-spacing: -0.01em;
 }
 
 .bg-navy {
@@ -51,112 +70,147 @@ body {
 }
 
 .accent-bar-blue {
-  background-color: var(--norway-blue);
+  background-color: var(--fjord);
 }
 
 .accent-bar-red {
-  background-color: var(--norway-red);
+  background-color: var(--accent);
 }
 
 .accent-bar-green {
-  background-color: var(--norway-red);
+  background-color: var(--accent);
 }
 
-.btn-primary {
-  display: inline-block;
-  border-radius: 9999px;
-  background-color: var(--norway-blue);
-  padding: 0.625rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  transition: background-color 0.15s ease;
-}
+@layer components {
+  .btn-primary,
+  .btn-primary-on-light,
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    border-radius: 0.125rem;
+    padding: 0.7rem 1.35rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    background-color: var(--fjord);
+    color: #fff;
+    transition: background-color 0.15s ease;
+  }
 
-.btn-primary:hover {
-  background-color: var(--norway-blue-hover);
-}
+  .btn-primary:hover,
+  .btn-primary-on-light:hover,
+  .btn-gold:hover {
+    background-color: var(--fjord-soft);
+    color: #fff;
+  }
 
-.btn-secondary {
-  display: inline-block;
-  border-radius: 9999px;
-  border: 1px solid rgb(255 255 255 / 0.35);
-  background-color: rgb(255 255 255 / 0.1);
-  padding: 0.625rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  backdrop-filter: blur(4px);
-  transition: background-color 0.15s ease;
-}
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    border-radius: 0.125rem;
+    border: 1px solid rgb(255 255 255 / 0.35);
+    background-color: rgb(255 255 255 / 0.08);
+    padding: 0.7rem 1.35rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #ffffff;
+    transition: background-color 0.15s ease;
+  }
 
-.btn-secondary:hover {
-  background-color: rgb(255 255 255 / 0.2);
-}
+  .btn-secondary:hover {
+    background-color: rgb(255 255 255 / 0.16);
+  }
 
-.btn-primary-on-light {
-  display: inline-block;
-  border-radius: 9999px;
-  background-color: var(--norway-blue);
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  transition: background-color 0.15s ease;
-}
+  .btn-outline-dark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    border-radius: 0.125rem;
+    border: 1px solid var(--border-light);
+    background: transparent;
+    padding: 0.7rem 1.35rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foreground);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
 
-.btn-primary-on-light:hover {
-  background-color: var(--norway-blue-hover);
+  .btn-outline-dark:hover {
+    border-color: var(--fjord);
+    background: var(--surface);
+  }
 }
 
 .page-hero {
   background-size: cover;
-  background-position: center;
+  background-position: center 40%;
   background-repeat: no-repeat;
 }
 
 .page-hero-overlay {
   background: linear-gradient(
-    180deg,
-    rgb(6 15 24 / 0.84) 0%,
-    rgb(12 24 41 / 0.68) 55%,
-    rgb(61 107 82 / 0.45) 100%
+    90deg,
+    rgb(17 25 32 / 0.84) 0%,
+    rgb(28 40 51 / 0.5) 55%,
+    rgb(107 124 140 / 0.22) 100%
   );
 }
 
 .page-hero-overlay-light {
   background: linear-gradient(
-    180deg,
-    rgb(6 15 24 / 0.58) 0%,
-    rgb(12 24 41 / 0.42) 45%,
-    rgb(61 107 82 / 0.35) 100%
+    90deg,
+    rgb(17 25 32 / 0.72) 0%,
+    rgb(28 40 51 / 0.4) 60%,
+    rgb(107 124 140 / 0.18) 100%
   );
 }
 
 .hero-content h1,
 .hero-content p,
 .hero-content a {
-  text-shadow: 0 1px 3px rgb(0 0 0 / 0.45), 0 4px 16px rgb(0 0 0 / 0.25);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+}
+
+.hero-eyebrow,
+.section-eyebrow {
+  color: var(--accent-soft);
+  letter-spacing: 0.16em;
+}
+
+.section-eyebrow {
+  color: var(--fjord);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.content-link {
+  color: var(--fjord);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.content-link:hover {
+  text-decoration: underline;
+}
+
+.premium-card {
+  border: 1px solid var(--border-light);
+  background: var(--surface);
 }
 
 .badge-accent-red {
   border: 1px solid rgb(255 255 255 / 0.35);
-  border-left: 3px solid var(--norway-red);
+  border-left: 3px solid var(--accent);
   background-color: rgb(255 255 255 / 0.12);
 }
 
 .badge-hero-red {
-  background-color: var(--norway-red);
+  background-color: var(--fjord);
   color: #ffffff;
-}
-
-.content-link {
-  font-weight: 500;
-  color: var(--norway-blue);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.content-link:hover {
-  color: var(--norway-blue-hover);
 }

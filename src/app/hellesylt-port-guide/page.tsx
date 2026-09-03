@@ -166,7 +166,7 @@ export default function HellesyltPortGuidePage() {
           Hornindal Lake and Nordfjord valleys with long road times each way.
         </p>
         <p>
-          Book longer tours only when your ship schedule supports them. For
+          Choose longer tours only when your ship schedule supports them. For
           three-to-four-hour calls, choose{" "}
           <Link href="/excursions/mount-stranda-panoramic-views">
             Mount Stranda panoramic touring

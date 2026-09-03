@@ -2,7 +2,6 @@ import type { ExcursionData } from "@/lib/excursion-types";
 import {
   hellesyltExcursionBreadcrumbs,
   hellesyltExcursionRelatedLinks,
-  standardNotIncluded,
   standardTimingAdvice,
 } from "@/lib/excursion-shared";
 import { imageAlts, siteImages } from "@/lib/site-images";
@@ -36,10 +35,10 @@ export const privateFullDayHellesyltHighlightsExcursion: ExcursionData = {
     { label: "Port call fit", value: "Requires 8+ hours ashore" },
   ],
   gallery: [
-    { src: siteImages.strandadalen, alt: imageAlts.strandadalen },
     { src: siteImages.briksdalGlacier, alt: imageAlts.briksdalGlacier },
+    { src: siteImages.oldedalen, alt: imageAlts.oldedalen },
     { src: siteImages.hornindalLake, alt: imageAlts.hornindalLake },
-    { src: siteImages.sunnylvsfjord, alt: imageAlts.sunnylvsfjord },
+    { src: siteImages.hellesyltVillage, alt: imageAlts.hellesyltVillage },
   ],
   highlights: [
     "Oldedalen Valley with dramatic glacial scenery",
@@ -96,5 +95,5 @@ export const privateFullDayHellesyltHighlightsExcursion: ExcursionData = {
     },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
+  bookingLabel: "Explore this excursion",
 };

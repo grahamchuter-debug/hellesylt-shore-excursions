@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync:schedules": "node scripts/sync-hellesylt-schedules.mjs",
+    "qa:hellesylt": "node scripts/qa-hellesylt-world20.mjs"
   },
   "dependencies": {
     "next": "16.2.6",

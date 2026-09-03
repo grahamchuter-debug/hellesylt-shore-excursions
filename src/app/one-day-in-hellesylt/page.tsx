@@ -8,7 +8,7 @@ import { imageAlts, siteImages } from "@/lib/site-images";
 const pageMeta = {
   title: "One Day in Hellesylt for Cruise Passengers",
   description:
-    "Sample one-day Hellesylt itineraries for cruise guests: very short technical calls, Mount Stranda half-day, Briksdal Glacier full port day, and private full-day scenery routes with return-to-ship timing.",
+    "Sample one-day Hellesylt itineraries for cruise guests: short village calls, Mount Stranda half-day, Briksdal Glacier full port day, and private full-day scenery routes with return-to-ship timing.",
   path: "/one-day-in-hellesylt",
   ogImage: siteImages.oneDay,
   ogImageAlt: imageAlts.oneDay,
@@ -39,7 +39,7 @@ const faqs = [
   {
     question: "Should I book Hellesylt excursions before my cruise arrives?",
     answer:
-      "Pre-booking is recommended on peak Geirangerfjord cruise days. Mount Stranda and glacier tours fill when several ships share the region.",
+      "On peak summer days, arrange popular Mount Stranda and glacier tours early through your usual channel. This site does not invent sold-out status.",
   },
   {
     question: "How much buffer time should I leave before all aboard?",
@@ -52,7 +52,7 @@ export default function OneDayInHellesyltPage() {
   return (
     <ContentPage
       title="One Day in Hellesylt"
-      lead="Practical sample itineraries for cruise passengers with very short technical calls, half-day Mount Stranda touring, full-day Briksdal Glacier experiences, and private full-day scenery routes with realistic return-to-ship timing."
+      lead="Practical sample itineraries for cruise passengers with short village calls, half-day Mount Stranda touring, full-day Briksdal Glacier experiences, and private full-day scenery routes with realistic return-to-ship timing."
       heroImage={pageMeta.ogImage}
       heroImageAlt={pageMeta.ogImageAlt}
       pagePath={pageMeta.path}
@@ -65,14 +65,14 @@ export default function OneDayInHellesyltPage() {
         <p>
           Every good Hellesylt day begins with your cruise line&apos;s arrival,
           departure, and all-aboard times. Subtract at least 45 minutes from
-          your last possible departure to set a hard deadline. Confirm whether
-          your call is a brief gateway stop before Geiranger or a longer
-          standalone port day.
+          your last possible departure to set a hard deadline. Check your
+          itinerary with the cruise line for any later calls nearby; this site
+          does not invent reposition logistics.
         </p>
       </section>
 
       <section>
-        <h2>Very short technical call: village and waterfall</h2>
+        <h2>Very short call: village and waterfall</h2>
         <p>
           With under three hours ashore, stay in Hellesylt village. Walk to the
           waterfall, explore the harbour, and enjoy a coffee by the waterfront.
@@ -137,11 +137,12 @@ export default function OneDayInHellesyltPage() {
           <Link href="/excursions/private-full-day-hellesylt-highlights">
             Private Full Day Hellesylt Highlights
           </Link>{" "}
-          with Oldedalen Valley, Briksdal Glacier, Loen Lake, and lunch, or the{" "}
+          with Briksdal Glacier, lake scenery, and lunch, or the optional{" "}
           <Link href="/excursions/private-panoramic-geiranger-lunch">
             Private Panoramic Journey to Geiranger with Lunch
-          </Link>{" "}
-          via Mount Dalsnibba Sky Walk.
+          </Link>
+          . For the Geiranger-area product, plan return carefully and check your
+          itinerary with the cruise line.
         </p>
         <ul>
           <li>Morning: private departure with flexible photo stops</li>
@@ -156,7 +157,7 @@ export default function OneDayInHellesyltPage() {
         <p>
           Head back to the cruise pier or tender point at least 30 to 45 minutes
           before all aboard. Use the{" "}
-          <Link href="/#planner">Cruise Smart Planner</Link> to validate your
+          <Link href="/#planner">Hellesylt cruise day planner</Link> to validate your
           itinerary against your actual port window before you sail.
         </p>
       </section>

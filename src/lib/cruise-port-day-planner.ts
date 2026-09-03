@@ -26,10 +26,10 @@ export type CruisePortDayPlannerConfig = {
 
 export const hellesyltPortDayPlannerConfig: CruisePortDayPlannerConfig = {
   portName: "Hellesylt",
-  heading: "Hellesylt Cruise Smart Planner™",
+  heading: "Hellesylt cruise day planner",
   subtitle: "Plan your shore excursions around your actual time in port.",
   supportingCopy:
-    "Built specifically for cruise passengers calling at Hellesylt, including short technical stops before Geiranger.",
+    "Built for cruise passengers calling at Hellesylt. Some itineraries also call nearby later in the day; check your cruise line, not this planner, for reposition details.",
   returnBufferNote:
     "Always confirm your cruise line's official all-aboard time, as this may be earlier than the published departure time.",
   tiers: [
@@ -136,9 +136,9 @@ export const hellesyltPortDayPlannerConfig: CruisePortDayPlannerConfig = {
       confidenceScore: 95,
       confidenceLabel: "Excellent Full Day",
       confidenceMessage:
-        "Ideal for private full-day Hellesylt highlights or the panoramic Geiranger route with lunch.",
+        "A long day may suit private Hellesylt highlights or the optional Geiranger-area private product, if return logistics are already confirmed with your cruise line and operator.",
       conversionNote:
-        "Most cruise passengers with 8+ hours in Hellesylt choose the Private Full Day Highlights or the Private Panoramic Journey to Geiranger with Lunch.",
+        "A long day can support private Hellesylt highlights or the optional Geiranger-area private product. Confirm return arrangements; this planner does not invent combination results.",
       excursions: [
         {
           label: "Private Full Day Hellesylt Highlights",
@@ -151,9 +151,9 @@ export const hellesyltPortDayPlannerConfig: CruisePortDayPlannerConfig = {
       ],
       dayPlan: [
         "Arrive early and confirm your private tour departure",
-        "Morning: Oldedalen Valley, Briksdal Glacier, or Geiranger panorama route",
-        "Midday: Lunch included on premium full-day tours",
-        "Afternoon: Additional viewpoints with flexible private pacing",
+        "Morning: one main private direction already listed on this site",
+        "Midday: lunch where included on the chosen private day",
+        "Afternoon: additional viewpoints only if return timing remains comfortable",
         "Keep the final hour free near the cruise port for a calm return",
       ],
     },

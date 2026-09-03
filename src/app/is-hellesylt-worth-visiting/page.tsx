@@ -8,7 +8,7 @@ import { imageAlts, siteImages } from "@/lib/site-images";
 const pageMeta = {
   title: "Is Hellesylt Worth Visiting for Cruise Passengers?",
   description:
-    "Honest guide for cruise guests: is Hellesylt worth visiting? Gateway to Geirangerfjord, waterfall village setting, Mount Stranda, Briksdal Glacier access, private scenic touring, and short-call booking advice.",
+    "Honest guide for cruise guests: is Hellesylt worth visiting? Waterfall village setting, Mount Stranda, Briksdal Glacier access, optional Geiranger-area private touring, and short-call planning advice.",
   path: "/is-hellesylt-worth-visiting",
   ogImage: siteImages.worthVisiting,
   ogImageAlt: imageAlts.worthVisiting,
@@ -27,17 +27,17 @@ const faqs = [
   {
     question: "Is Hellesylt worth visiting from a cruise ship?",
     answer:
-      "Yes for most Geirangerfjord itineraries. Hellesylt combines a famous waterfall, compact village charm, and access to Mount Stranda, Briksdal Glacier, and Geiranger panorama routes when your port time allows.",
+      "Yes for many passengers. Hellesylt combines a famous waterfall, compact village charm, and access to Mount Stranda and Briksdal Glacier when your port time allows. An optional Geiranger-area private product is also listed for longer days.",
   },
   {
-    question: "Should I book a tour if my cruise only stops briefly in Hellesylt?",
+    question: "Should I arrange a tour if my cruise only stops briefly in Hellesylt?",
     answer:
-      "If your call is under three hours, focus on village and waterfall time rather than countryside tours. Book Mount Stranda or glacier excursions only when your schedule clearly supports the driving time required.",
+      "If your call is under three hours, focus on village and waterfall time rather than countryside tours. Consider Mount Stranda or glacier excursions only when your schedule clearly supports the driving time required.",
   },
   {
     question: "How is Hellesylt different from Geiranger?",
     answer:
-      "Hellesylt is the gateway village at the entrance to Geirangerfjord, known for its waterfall and ferry-road setting. Geiranger sits deeper in the fjord with iconic serpentine viewpoints. Many cruises call at both.",
+      "Hellesylt is a waterfall village on Sunnylvsfjord with its own pier experience. Geiranger sits deeper in the fjord with iconic serpentine viewpoints. Some cruises call at both; check your itinerary with the cruise line rather than assuming a shared day.",
   },
   {
     question: "Can I reach Briksdal Glacier from Hellesylt?",
@@ -60,7 +60,7 @@ export default function IsHellesyltWorthVisitingPage() {
   return (
     <ContentPage
       title="Is Hellesylt Worth Visiting?"
-      lead="An honest look at whether Hellesylt deserves your hours ashore, gateway to Geirangerfjord scenery, waterfall village setting, Mount Stranda viewpoints, Briksdal Glacier access, and private scenic touring options."
+      lead="An honest look at whether Hellesylt deserves your hours ashore: waterfall village setting, Mount Stranda viewpoints, Briksdal Glacier access, and optional private scenic touring."
       heroImage={pageMeta.ogImage}
       heroImageAlt={pageMeta.ogImageAlt}
       pagePath={pageMeta.path}
@@ -69,26 +69,28 @@ export default function IsHellesyltWorthVisitingPage() {
       faqs={faqs}
     >
       <section>
-        <h2>Short answer: yes, especially as a fjord gateway port</h2>
+        <h2>Short answer: yes, especially for the village itself</h2>
         <p>
-          Hellesylt rewards cruise passengers who understand its role on
-          Geirangerfjord itineraries. Even a short stop delivers one of
+          Hellesylt rewards cruise passengers who treat it as its own stop, not
+          only as context for somewhere else. Even a short call delivers one of
           Norway&apos;s most photographed waterfalls flowing through a village
-          centre, while longer calls unlock Mount Stranda gondola views,
-          Briksdal Glacier, and private Geiranger panorama routes.
+          centre, while longer calls unlock Mount Stranda gondola views and
+          Briksdal Glacier. An optional{" "}
+          <Link href="/excursions/private-panoramic-geiranger-lunch">
+            Geiranger-area private product
+          </Link>{" "}
+          exists for carefully planned full days.
         </p>
       </section>
 
       <section>
-        <h2>Gateway to Geirangerfjord</h2>
+        <h2>Optional Geiranger-area context</h2>
         <p>
-          Hellesylt sits where Sunnylvsfjord meets the route into
-          Geirangerfjord. Many ships pause here before continuing deeper into
-          the fjord, which makes Hellesylt a natural starting point for{" "}
-          <Link href="/excursions/private-panoramic-geiranger-lunch">
-            private Geiranger panorama touring
-          </Link>{" "}
-          on full-day port calls.
+          Some itineraries also visit Geiranger later or on another day. That is
+          useful background, not the purpose of this site. Check your itinerary
+          with the cruise line; this site does not invent reposition logistics.
+          On a long Hellesylt day, the private Geiranger panorama product can be
+          one option among others already listed here.
         </p>
       </section>
 
@@ -96,9 +98,9 @@ export default function IsHellesyltWorthVisitingPage() {
         <h2>Waterfall and village setting</h2>
         <p>
           The Hellesylt waterfall runs through the heart of the village, giving
-          even short technical calls a memorable reason to go ashore. Shops,
-          cafés, and harbour viewpoints are minutes from pier or tender
-          landings without needing a coach transfer.
+          even short calls a memorable reason to go ashore. Shops, cafés, and
+          harbour viewpoints are minutes from pier or tender landings without
+          needing a coach transfer.
         </p>
       </section>
 

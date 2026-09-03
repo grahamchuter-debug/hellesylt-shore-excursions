@@ -2,32 +2,28 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CruisePortDayPlanner } from "@/components/cruise-port-day-planner";
-import {
-  ExploreNorwegianPorts,
-  explorePortsFromHellesylt,
-} from "@/components/explore-norwegian-ports";
 import { JsonLd } from "@/components/json-ld";
 import { PageHero } from "@/components/page-hero";
-import { PlannerInterestGroups } from "@/components/planner-interest-groups";
 import { TourCard } from "@/components/tour-card";
 import {
-  hellesyltTourCards,
-  hellesyltTourListItems,
-} from "@/lib/hellesylt-tours";
+  hellesyltScheduleIntegrity,
+  formatScheduleDate,
+} from "@/lib/hellesylt-schedules";
+import { hellesyltTourCards, hellesyltTourListItems } from "@/lib/hellesylt-tours";
+import { siteConfig } from "@/lib/site-config";
+import { imageAlts, siteImages } from "@/lib/site-images";
 import { buildPageMetadata } from "@/lib/site-metadata";
 import {
   buildFaqSchema,
   buildItemListSchema,
   buildWebPageSchema,
 } from "@/lib/site-schema";
-import { imageAlts, siteImages } from "@/lib/site-images";
-import { siteConfig } from "@/lib/site-config";
 
 const pageMeta = {
   title:
-    "Hellesylt Shore Excursions | Fjord Gateway Tours & Cruise Port Guides",
+    "Hellesylt Shore Excursions | Village, Mount Stranda & Cruise Port Guides",
   description:
-    "Plan your Hellesylt cruise port day with Mount Stranda tours, Briksdal Glacier excursions, Geiranger viewpoints, port guides, and return-to-ship friendly shore excursion advice.",
+    "Plan your Hellesylt cruise port day with village and waterfall time, Mount Stranda panoramas, Briksdal Glacier outings, port guides, and return-to-ship friendly shore excursion advice.",
   path: "/",
 } as const;
 
@@ -38,41 +34,39 @@ export const metadata: Metadata = buildPageMetadata({
   absoluteTitle: true,
 });
 
-const trustBadges = [
-  { label: "Return to ship on time", accent: true },
-  { label: "Gateway to Geiranger", accent: false },
-  { label: "Fjord and glacier scenery", accent: false },
-] as const;
-
 const homeFaqs = [
   {
-    question: "Is Hellesylt worth visiting from a cruise ship?",
+    question: "Is this site for cruise passengers calling at Hellesylt?",
     answer:
-      "Yes, Hellesylt is a scenic fjord gateway with a famous waterfall, compact village charm, and access to Mount Stranda, Briksdal Glacier, and Geiranger viewpoints. Many cruises stop briefly here before continuing to Geirangerfjord.",
+      "Yes. This is an independent Hellesylt cruise-port planning site. It helps you choose between village and waterfall time, Mount Stranda, Briksdal Glacier, or a longer private day already listed here, check published ship calls, and leave a return buffer. Confirm final timings with your cruise line.",
   },
   {
-    question: "How long should I spend in Hellesylt?",
+    question: "Should I stay in the village, go to Mount Stranda, or head to Briksdal?",
     answer:
-      "Under three hours suits village and waterfall time only. Three to four hours fits Mount Stranda panoramic tours. Six to eight hours unlocks Briksdal Glacier. Eight or more hours enables private full-day scenery and Geiranger panorama routes.",
+      "Stay in the village on a short call. Mount Stranda suits a few hours when gondola and viewpoints are your priority. Briksdal needs a longer confirmed window from Hellesylt. Pick one main outing unless tickets and timing are already confirmed.",
   },
   {
-    question: "Can I visit Briksdal Glacier from Hellesylt cruise port?",
+    question: "Can I do a Geiranger-area private day from Hellesylt?",
     answer:
-      "Yes. Briksdal Glacier Discovery tours depart from Hellesylt and include Hornindal Lake, Nordfjord scenery, and glacier hiking. Allow at least six hours ashore for this experience.",
+      "A private panoramic Geiranger product is listed on this site for long days. Check your itinerary with the cruise line; this site does not invent reposition logistics between Hellesylt and Geiranger. Plan return to your embarkation point carefully.",
   },
   {
-    question: "What is the best Hellesylt shore excursion?",
+    question: "Can I book shore excursions on this site?",
     answer:
-      "Journey to Mount Stranda and Panoramic Views is the headline choice for first-time visitors with three to four hours. For glacier lovers with six or more hours, Briksdal Glacier Discovery is the major full-day option.",
-  },
-  {
-    question: "Is Hellesylt walkable from the cruise port?",
-    answer:
-      "Yes. Hellesylt village is compact and the waterfall is within walking distance of most piers and tender landings. Excursion meeting points are typically minutes from where you come ashore.",
+      "This site is for planning and discovery. There is no live booking checkout here. Use the excursion pages and guides to understand options, then arrange tours through operators or your usual booking channel.",
   },
 ] as const;
 
 export default function Home() {
+  const firstLabel = hellesyltScheduleIntegrity.firstDate
+    ? formatScheduleDate(hellesyltScheduleIntegrity.firstDate)
+    : "";
+  const lastLabel = hellesyltScheduleIntegrity.lastDate
+    ? formatScheduleDate(hellesyltScheduleIntegrity.lastDate)
+    : "";
+  const featured = hellesyltTourCards.slice(0, 3);
+  const remaining = hellesyltTourCards.slice(3);
+
   return (
     <>
       <JsonLd
@@ -86,153 +80,280 @@ export default function Home() {
           buildFaqSchema(homeFaqs),
         ]}
       />
-      <main className="min-h-screen bg-white text-slate-900">
+      <main>
         <PageHero
           image={siteImages.hero}
           imageAlt={imageAlts.hero}
-          centered
-          compact
-          overlay="light"
-          className="min-h-[25rem] md:min-h-[31rem] lg:min-h-[34rem]"
+          className="min-h-[28rem] md:min-h-[32rem]"
         >
-          <h1 className="mb-3 text-2xl font-bold text-white sm:mb-5 sm:text-4xl md:text-5xl lg:text-6xl">
-            Hellesylt Shore Excursions
-          </h1>
-
-          <p className="mx-auto mb-5 max-w-3xl text-sm text-white/95 sm:mb-7 sm:text-lg md:text-xl">
-            Explore Mount Stranda, Briksdal Glacier, Geiranger viewpoints,
-            mountain valleys and waterfall scenery with cruise-friendly shore
-            excursions from Hellesylt.
+          <p className="hero-eyebrow mb-3 text-xs font-semibold uppercase tracking-[0.2em]">
+            {siteConfig.name}
           </p>
-
-          <a
-            href="#tours"
-            className="btn-primary px-6 py-3 text-sm sm:px-8 sm:py-4 sm:text-base"
-          >
-            View Excursions
-          </a>
-
-          <ul className="mx-auto mt-4 flex max-w-2xl flex-wrap items-center justify-center gap-2 sm:mt-6 sm:gap-3">
-            {trustBadges.map((badge) => (
-              <li
-                key={badge.label}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium text-white/95 backdrop-blur-sm sm:px-4 sm:text-sm ${
-                  badge.accent
-                    ? "badge-accent-red"
-                    : "border border-white/25 bg-white/10"
-                }`}
-              >
-                {badge.label}
-              </li>
-            ))}
-          </ul>
+          <h1 className="font-display mb-5 max-w-4xl text-3xl font-semibold leading-tight text-white sm:text-5xl">
+            Your ship is in Hellesylt. Village, Mount Stranda, or Briksdal?
+          </h1>
+          <p className="max-w-2xl text-base leading-7 text-white/90 sm:text-lg">
+            Waterfall slate, fjord walls and mountain light. Choose one main
+            direction, then keep time to get back to the pier.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Link
+              href="/excursions"
+              className="btn-primary w-full justify-center sm:w-auto"
+            >
+              Explore Hellesylt excursions
+            </Link>
+            <Link
+              href="/ship-schedule"
+              className="btn-secondary w-full justify-center sm:w-auto"
+            >
+              Check your ship schedule
+            </Link>
+          </div>
         </PageHero>
 
-        <section id="tours" className="border-t bg-surface-muted">
-          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-            <h2 className="mb-2 text-3xl font-bold sm:mb-3 sm:text-4xl">
-              Popular Hellesylt Tours
+        <section className="border-b border-[var(--border-light)] bg-[var(--surface)] py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">Three Hellesylt days</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Village focus, Mount Stranda, or Briksdal
             </h2>
-            <p className="mb-4 max-w-2xl text-slate-600">
-              Cruise-friendly excursions that depart near Hellesylt village and
-              fit typical port-day schedules, from short waterfall calls to
-              full-day glacier and Geiranger routes.
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              The inventory on this site already splits that way, with private
+              options when you want more pace control. No extra decision URL. Use
+              the one-day guide for hours, not as proof that every stop will
+              combine.
             </p>
-            <p className="mb-8 max-w-2xl rounded-lg border border-slate-200 border-l-[3px] border-l-[var(--norway-red)] bg-white px-4 py-3 text-sm leading-6 text-slate-700">
-              Every excursion featured is selected to fit comfortably within a
-              typical Hellesylt cruise port call, including short technical
-              stops before Geiranger.
-            </p>
+            <div className="mt-10 grid gap-10 md:grid-cols-3">
+              <div>
+                <h3 className="font-display text-xl font-semibold text-slate-900">
+                  Village and waterfall
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Compact harbour walks and Hellesyltfossen when hours ashore are
+                  short. Stay close to the pier and keep your return buffer.
+                </p>
+                <Link
+                  href="/hellesylt-port-guide"
+                  className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
+                >
+                  Hellesylt port guide
+                </Link>
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-semibold text-slate-900">
+                  Mount Stranda
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Gondola and panoramic viewpoints when a few hours are confirmed.
+                  Still one main outing, not a guarantee that every stop will fit.
+                </p>
+                <Link
+                  href="/excursions/mount-stranda-panoramic-views"
+                  className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
+                >
+                  Mount Stranda panoramic views
+                </Link>
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-semibold text-slate-900">
+                  Briksdal Glacier
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Longer day from Hellesylt when mountain roads and glacier walking
+                  are the priority. Confirm the day&apos;s operation with the
+                  operator.
+                </p>
+                <Link
+                  href="/excursions/briksdal-glacier-discovery"
+                  className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
+                >
+                  Briksdal Glacier Discovery
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {hellesyltTourCards.map((tour) => (
-                <TourCard
-                  key={tour.href}
-                  href={tour.href}
-                  image={tour.image}
-                  imageAlt={tour.imageAlt}
-                  title={tour.title}
-                  description={tour.description}
-                  badge={tour.badge}
-                />
+        <section className="border-b border-[var(--border-light)] bg-surface-muted py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">Find your ship</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Check when your ship is in Hellesylt
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              {hellesyltScheduleIntegrity.total} published Hellesylt calls from{" "}
+              {firstLabel} to {lastLabel}. Arrival and departure times shape
+              what is realistic ashore. Always confirm with your cruise line.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/ship-schedule" className="btn-outline-dark">
+                Open Hellesylt ship schedule
+              </Link>
+              <Link
+                href="/one-day-in-hellesylt"
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
+              >
+                Then plan your hours
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section id="tours" className="scroll-mt-24 py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">Excursion options</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Experiences already on this site
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              No invented products or prices. Durations are approximate. Keep a
+              return buffer. This site does not sell tickets.
+            </p>
+            <div className="mt-10 grid gap-6 md:grid-cols-3">
+              {featured.map((tour) => (
+                <TourCard key={tour.href} {...tour} />
               ))}
             </div>
+            {remaining.length > 0 ? (
+              <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {remaining.map((tour) => (
+                  <TourCard key={tour.href} {...tour} />
+                ))}
+              </div>
+            ) : null}
             <p className="mt-8">
               <Link
                 href="/excursions"
-                className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-800 transition hover:border-[var(--norway-blue)] hover:text-[var(--norway-blue)]"
+                className="text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
               >
-                View all Hellesylt excursions
+                Compare all Hellesylt excursions
               </Link>
             </p>
           </div>
         </section>
 
-        <section id="why-hellesylt" className="border-t bg-white">
-          <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
-            <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
-              Why Hellesylt Is Ideal for Cruise Shore Excursions
+        <section className="border-y border-[var(--border-light)] bg-[var(--surface)] py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">Optional longer private day</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Geiranger-area outing needs careful planning
             </h2>
-            <p className="text-base leading-8 text-slate-700 sm:text-lg">
-              Hellesylt sits at the head of Sunnylvsfjord, the gateway to
-              Geirangerfjord. Cruise passengers arrive at a waterfall-led
-              village, then reach Mount Stranda gondola viewpoints, Briksdal
-              Glacier, and Geiranger panorama routes on shore excursions timed
-              for return-to-ship schedules.
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              A private panoramic Geiranger product exists in the inventory for
+              long days. Check your itinerary with the cruise line; this site does
+              not invent reposition logistics. Treat return to your embarkation
+              point as part of the plan, not an assumption.
             </p>
-            <ul className="mt-6 list-disc space-y-2 pl-5 text-base leading-8 text-slate-700">
-              <li>
-                Famous Hellesylt waterfall and compact village within walking
-                distance of the port
-              </li>
-              <li>
-                Mount Stranda gondola with Sunnmøre Alps and Storfjord panoramas
-              </li>
-              <li>
-                Briksdal Glacier access via Hornindal Lake and Nordfjord scenery
-              </li>
-              <li>
-                Private Geiranger panorama routes with Mount Dalsnibba Sky Walk
-              </li>
-              <li>
-                Cruise-friendly excursion meeting points minutes from pier or
-                tender landing
-              </li>
-              <li>
-                Match excursions to your actual hours ashore with our Cruise
-                Smart Planner
-              </li>
+            <Link
+              href="/excursions/private-panoramic-geiranger-lunch"
+              className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
+            >
+              Private panoramic Geiranger notes
+            </Link>
+          </div>
+        </section>
+
+        <section className="py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">First time in Hellesylt</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Useful planning guides
+            </h2>
+            <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  href: "/hellesylt-port-guide",
+                  title: "Cruise port guide",
+                  text: "Village layout from the pier toward Mount Stranda and Briksdal outings.",
+                },
+                {
+                  href: "/one-day-in-hellesylt",
+                  title: "One day in Hellesylt",
+                  text: "Sample shapes for short, classic and longer port calls.",
+                },
+                {
+                  href: "/is-hellesylt-worth-visiting",
+                  title: "Is Hellesylt worth visiting?",
+                  text: "Honest context if you are deciding how to spend hours ashore.",
+                },
+                {
+                  href: "/best-time-to-visit-hellesylt",
+                  title: "Best time to visit",
+                  text: "Seasonal context for cruise months already published here.",
+                },
+              ].map((item) => (
+                <li
+                  key={item.href}
+                  className="border-t border-[var(--border-light)] pt-5"
+                >
+                  <h3 className="font-display text-lg font-semibold text-slate-900">
+                    <Link
+                      href={item.href}
+                      className="underline-offset-4 hover:underline"
+                    >
+                      {item.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {item.text}
+                  </p>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
 
-        <section id="planner" className="border-t bg-white">
-          <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
-            <CruisePortDayPlanner />
-            <PlannerInterestGroups />
+        <section
+          id="planner"
+          className="scroll-mt-24 border-y border-[var(--border-light)] bg-surface-muted py-14 sm:py-16"
+        >
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">Port-day planning</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Think in hours, spray and return buffer
+            </h2>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              Use published times as a planning start. This planner helps you
+              think through the day. It does not invent gondola hours or glacier
+              path conditions.
+            </p>
+            <div className="mt-8">
+              <CruisePortDayPlanner />
+            </div>
           </div>
         </section>
 
-        <ExploreNorwegianPorts
-          config={explorePortsFromHellesylt}
-          variant="compact"
-        />
-
-        <section id="faqs" className="border-t bg-surface-muted">
-          <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
-            <h2 className="mb-6 text-2xl font-bold text-slate-900 sm:text-3xl">
-              Hellesylt cruise passenger FAQs
+        <section className="py-14 sm:py-16">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <p className="section-eyebrow">Norway beyond Hellesylt</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Planning other Norwegian ports?
             </h2>
-            <dl className="space-y-6">
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
+              For multi-port itineraries, the national planning site covers the
+              wider Norway cruise picture.
+            </p>
+            <a
+              href={siteConfig.nationalAuthorityUrl}
+              className="mt-6 inline-flex min-h-11 items-center text-sm font-semibold text-[var(--fjord)] underline-offset-4 hover:underline"
+            >
+              Norway Shore Excursions
+            </a>
+          </div>
+        </section>
+
+        <section className="border-y border-[var(--border-light)] bg-[var(--surface)] py-14 sm:py-16">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6">
+            <p className="section-eyebrow">FAQ</p>
+            <h2 className="font-display mt-3 text-2xl font-semibold text-slate-900 sm:text-3xl">
+              Hellesylt cruise questions
+            </h2>
+            <dl className="mt-8 space-y-6">
               {homeFaqs.map((faq) => (
-                <div
-                  key={faq.question}
-                  className="rounded-lg border border-slate-200 border-l-[3px] border-l-[var(--norway-blue)] bg-white p-5 shadow-sm"
-                >
-                  <dt className="font-semibold text-slate-900">
-                    {faq.question}
-                  </dt>
-                  <dd className="mt-2 leading-7 text-slate-700">
+                <div key={faq.question}>
+                  <dt className="font-semibold text-slate-900">{faq.question}</dt>
+                  <dd className="mt-2 text-sm leading-6 text-slate-600">
                     {faq.answer}
                   </dd>
                 </div>
@@ -241,30 +362,19 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-t bg-navy text-white">
-          <div className="mx-auto max-w-3xl px-4 py-14 text-center sm:px-6 sm:py-16">
-            <h2 className="text-2xl font-bold sm:text-3xl">
-              Plan your Hellesylt port day with confidence
+        <section className="bg-navy py-14 text-white sm:py-16">
+          <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
+            <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+              Hellesylt planning concierge
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
-              Browse shore excursions, read the port guide, and use the Cruise
-              Smart Planner, everything built for cruise passengers who need to
-              return on time.
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/80 sm:text-base">
+              {siteConfig.contactEmailVerified
+                ? `Questions about shaping a Hellesylt port day? Email ${siteConfig.contactEmail}.`
+                : "A destination email is being prepared. Until then, use the schedule, one-day guide and excursion pages on this site."}
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href={siteConfig.shoreExcursionsPath}
-                className="btn-primary sm:text-base"
-              >
-                Book a Tour
-              </Link>
-              <Link
-                href="/hellesylt-port-guide"
-                className="btn-secondary sm:text-base"
-              >
-                Hellesylt Port Guide
-              </Link>
-            </div>
+            <Link href="/contact" className="btn-primary mt-6">
+              Contact
+            </Link>
           </div>
         </section>
       </main>

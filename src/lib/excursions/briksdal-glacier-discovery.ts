@@ -42,7 +42,7 @@ export const briksdalGlacierDiscoveryExcursion: ExcursionData = {
     { src: siteImages.briksdalGlacier, alt: imageAlts.briksdalGlacier },
     { src: siteImages.hornindalLake, alt: imageAlts.hornindalLake },
     { src: siteImages.briksdalWaterfall, alt: imageAlts.briksdalWaterfall },
-    { src: siteImages.strandadalen, alt: imageAlts.strandadalen },
+    { src: siteImages.oldedalen, alt: imageAlts.oldedalen },
   ],
   highlights: [
     "Scenic journey from Hellesylt through mountain roads",
@@ -66,7 +66,7 @@ export const briksdalGlacierDiscoveryExcursion: ExcursionData = {
   notIncluded: standardNotIncluded,
   timingAdvice: [
     ...standardTimingAdvice,
-    "Do not book this tour if your Hellesylt call is under six hours or a brief technical stop before Geiranger.",
+    "Do not choose this tour if your Hellesylt call is under six hours. Short village-only calls are not suitable for Briksdal.",
   ],
   faqs: [
     {
@@ -94,5 +94,5 @@ export const briksdalGlacierDiscoveryExcursion: ExcursionData = {
     },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
+  bookingLabel: "Explore this excursion",
 };

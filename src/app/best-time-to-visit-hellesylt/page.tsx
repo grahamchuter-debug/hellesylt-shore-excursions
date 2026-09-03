@@ -29,12 +29,12 @@ const faqs = [
   {
     question: "What is the best month for Hellesylt cruise shore excursions?",
     answer:
-      "May through September offers the most reliable Mount Stranda gondola operation, glacier route access, and walkable village weather. June and July are busiest on Geirangerfjord itineraries, book excursions early.",
+      "May through September offers the most reliable Mount Stranda gondola operation, glacier route access, and walkable village weather. June and July are often the busiest published months here.",
   },
   {
     question: "Is Hellesylt crowded in summer?",
     answer:
-      "Yes on peak cruise days when multiple ships visit the Geirangerfjord region. Disembark early, pre-book Mount Stranda and glacier tours, and allow extra return margin on mountain road days.",
+      "It can be busy on peak cruise days. Disembark early, arrange popular Mount Stranda and glacier tours through your usual channel when capacity looks tight, and allow extra return margin on mountain road days. This site does not invent sold-out status.",
   },
   {
     question: "Can I visit Hellesylt on a winter cruise?",
@@ -76,8 +76,8 @@ export default function BestTimeToVisitHellesyltPage() {
         <p>
           Mid-summer delivers the classic Norway fjord experience cruise guests
           expect, green valley walls, reliable Mount Stranda gondola operation,
-          and full excursion timetables. Book Mount Stranda and glacier tours in
-          advance on multi-ship days.
+          and full excursion timetables. On multi-ship days, arrange popular
+          Mount Stranda and glacier tours early through your usual channel.
         </p>
       </section>
 
@@ -92,12 +92,13 @@ export default function BestTimeToVisitHellesyltPage() {
       </section>
 
       <section>
-        <h2>Short-call patterns before Geiranger</h2>
+        <h2>Short calls and nearby Geiranger context</h2>
         <p>
-          Some summer itineraries schedule a brief Hellesylt stop before the ship
-          continues into Geirangerfjord. Check your cruise timetable carefully:
-          these technical calls suit waterfall and village time, not full glacier
-          or Geiranger panorama days.
+          Some summer itineraries schedule a brief Hellesylt stop, sometimes with
+          another fjord call later. That is optional context only. Check your
+          cruise timetable carefully: short calls suit waterfall and village
+          time, not full glacier or Geiranger panorama days. This site does not
+          invent reposition logistics.
         </p>
       </section>
 
@@ -115,8 +116,8 @@ export default function BestTimeToVisitHellesyltPage() {
         <h2>Planning tips whatever month you visit</h2>
         <ul>
           <li>
-            Pre-book headline Mount Stranda and glacier excursions on peak
-            summer itineraries
+            Arrange popular Mount Stranda and glacier excursions early on peak
+            summer itineraries through your usual channel
           </li>
           <li>Pack a waterproof layer, mountain weather shifts quickly</li>
           <li>

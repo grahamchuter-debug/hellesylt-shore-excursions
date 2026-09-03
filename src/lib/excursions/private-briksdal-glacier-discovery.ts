@@ -89,5 +89,5 @@ export const privateBriksdalGlacierDiscoveryExcursion: ExcursionData = {
     },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
+  bookingLabel: "Explore this excursion",
 };

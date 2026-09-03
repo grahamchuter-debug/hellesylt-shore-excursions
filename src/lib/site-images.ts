@@ -8,15 +8,13 @@ const sunnylvsfjord =
   "https://upload.wikimedia.org/wikipedia/commons/9/94/Wide_view_over_Sunnylvsfjorden_and_Geirangerfjorden_from_Lj%C3%B8en%2C_Stranda%2C_M%C3%B8re_og_Romsdal%2C_Norway%2C_2025_June.jpg";
 const ljoeenViewpoint =
   "https://upload.wikimedia.org/wikipedia/commons/3/3c/Ljoen_viewpoint2013-1.jpg";
-const mountStranda =
-  "https://upload.wikimedia.org/wikipedia/commons/a/a8/Hoven_Loen.jpg";
 const briksdalGlacier =
   "https://upload.wikimedia.org/wikipedia/commons/c/ca/Briksdalsbreen_Glacier_-Norway.jpg";
 const hornindalLake =
   "https://upload.wikimedia.org/wikipedia/commons/6/6a/Hornindalsvatnet.jpg";
 const geirangerViewpoint =
   "https://upload.wikimedia.org/wikipedia/commons/1/10/Flydalsjuvet_Geiranger_Geirangerfjorden.jpg";
-const strandadalen =
+const oldedalen =
   "https://upload.wikimedia.org/wikipedia/commons/f/ff/Oldedalen.jpg";
 const briksdalWaterfall =
   "https://upload.wikimedia.org/wikipedia/commons/c/c7/Briksdal_Glacier_Norway_%28213014897%29.jpeg";
@@ -27,20 +25,21 @@ export const siteImages = {
   hellesyltVillage,
   sunnylvsfjord,
   ljoeenViewpoint,
-  mountStranda,
+  // Mount Stranda visual slots use Ljøen / Sunnylvsfjord corridor assets already in-repo.
+  mountStranda: ljoeenViewpoint,
   briksdalGlacier,
   hornindalLake,
   geirangerViewpoint,
-  strandadalen,
+  oldedalen,
   briksdalWaterfall,
   portGuide: hellesyltVillage,
   worthVisiting: hellesyltWaterfall,
   oneDay: sunnylvsfjord,
   bestTime: geirangerViewpoint,
-  mountStrandaTour: mountStranda,
+  mountStrandaTour: sunnylvsfjord,
   briksdalTour: briksdalGlacier,
   privateBriksdalTour: briksdalWaterfall,
-  privateFullDayTour: strandadalen,
+  privateFullDayTour: briksdalGlacier,
   privateMountStrandaTour: ljoeenViewpoint,
   privateGeirangerTour: geirangerViewpoint,
   flamPortCard:
@@ -68,21 +67,21 @@ export const imageAlts = {
   hellesyltWaterfall:
     "Hellesyltfossen waterfall cascading through Hellesylt village near the cruise port",
   hellesyltVillage:
-    "Hellesylt village and ferry on Sunnylvsfjord, gateway to Geirangerfjord cruise port",
+    "Hellesylt village and ferry on Sunnylvsfjord near the cruise port",
   sunnylvsfjord:
     "Wide view over Sunnylvsfjord and Geirangerfjord from Ljøen near Hellesylt",
   ljoeenViewpoint:
     "Ljøen viewpoint overlooking Sunnylvsfjord and mountain valleys near Hellesylt",
   mountStranda:
-    "Panoramic mountain and fjord views from elevated viewpoints in the Sunnmøre Alps region",
+    "Ljøen viewpoint overlooking Sunnylvsfjord on the Mount Stranda scenic corridor from Hellesylt",
   briksdalGlacier:
     "Briksdal Glacier arm of Jostedalsbreen reached on shore excursions from Hellesylt",
   hornindalLake:
     "Hornindalsvatnet deep blue lake surrounded by mountains on routes from Hellesylt",
   geirangerViewpoint:
-    "Flydalsjuvet Geirangerfjord viewpoint on panoramic tours from Hellesylt",
-  strandadalen:
-    "Oldedalen valley with waterfalls and alpine scenery on Hellesylt full-day tours",
+    "Flydalsjuvet Geirangerfjord viewpoint on panoramic tours listed from Hellesylt",
+  oldedalen:
+    "Oldedalen valley scenery on Briksdal Glacier and full-day Nordfjord itineraries from Hellesylt",
   briksdalWaterfall:
     "Waterfall and glacial lake scenery at Briksdal Glacier on Hellesylt glacier tours",
   portGuide:
@@ -90,21 +89,21 @@ export const imageAlts = {
   worthVisiting:
     "Hellesyltfossen waterfall in the village centre, is Hellesylt worth visiting on a cruise",
   oneDay:
-    "Sunnylvsfjord and Geirangerfjord view from Ljøen on a one day in Hellesylt itinerary",
+    "Sunnylvsfjord view from Ljøen on a one day in Hellesylt itinerary",
   bestTime:
-    "Geirangerfjord viewpoint in summer light, best time to visit Hellesylt on a cruise",
+    "Summer fjord light near Geirangerfjord viewpoints, seasonal context for Hellesylt cruise calls",
   mountStrandaTourCard:
-    "Mountain and fjord panoramas on the headline Mount Stranda Hellesylt shore excursion",
+    "Sunnylvsfjord panorama on the Mount Stranda scenic corridor from Hellesylt",
   briksdalTourCard:
     "Briksdal Glacier discovery tour from Hellesylt with Nordfjord valley scenery",
   privateBriksdalTourCard:
     "Private Briksdal Glacier hike with flexible pace from Hellesylt cruise port",
   privateFullDayTourCard:
-    "Private full day Hellesylt highlights with Oldedalen Valley and glacier scenery",
+    "Briksdal Glacier scenery on the private full-day highlights itinerary from Hellesylt",
   privateMountStrandaTourCard:
     "Private Mount Stranda panoramic tour with Ljøen viewpoint from Hellesylt",
   privateGeirangerTourCard:
-    "Private panoramic journey to Geiranger with lunch from Hellesylt gateway port",
+    "Private panoramic Geiranger-area journey with lunch, listed from Hellesylt",
   flamPortCard:
     "Flam harbour with cruise ship at the pier, Flam Shore Excursions",
   bergenPortCard:

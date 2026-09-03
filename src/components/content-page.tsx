@@ -52,10 +52,10 @@ export function ContentPage({
   faqs,
   breadcrumbs,
   belowHero,
-  ctaTitle = "Plan your Hellesylt shore excursion",
-  ctaText = "Browse cruise-friendly tours designed around your ship's time in port, with enough margin to return before all aboard.",
+  ctaTitle = "Plan your Hellesylt shore day",
+  ctaText = "Compare village, Mount Stranda and Briksdal ideas against your hours ashore, then keep a clear walk back to the pier.",
   ctaHref = siteConfig.shoreExcursionsPath,
-  ctaButtonLabel = "View Hellesylt shore excursions",
+  ctaButtonLabel = "Explore Hellesylt excursions",
   showShipReassurance = true,
   relatedSectionTitle = "Related Hellesylt guides",
 }: ContentPageProps) {

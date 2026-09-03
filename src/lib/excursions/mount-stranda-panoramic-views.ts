@@ -39,10 +39,10 @@ export const mountStrandaPanoramicViewsExcursion: ExcursionData = {
     { label: "Port call fit", value: "Ideal for 3 to 6 hour visits" },
   ],
   gallery: [
-    { src: siteImages.mountStranda, alt: imageAlts.mountStranda },
     { src: siteImages.ljoeenViewpoint, alt: imageAlts.ljoeenViewpoint },
     { src: siteImages.sunnylvsfjord, alt: imageAlts.sunnylvsfjord },
-    { src: siteImages.strandadalen, alt: imageAlts.strandadalen },
+    { src: siteImages.hellesyltVillage, alt: imageAlts.hellesyltVillage },
+    { src: siteImages.hellesyltWaterfall, alt: imageAlts.hellesyltWaterfall },
   ],
   highlights: [
     "Sunnylvsfjord scenic drive from Hellesylt",
@@ -75,7 +75,7 @@ export const mountStrandaPanoramicViewsExcursion: ExcursionData = {
     {
       question: "Is this tour suitable for short Hellesylt port calls?",
       answer:
-        "Yes, when you have at least three hours ashore. It is the best fit for technical stops and half-day schedules before Geiranger.",
+        "Yes, when you have at least three hours ashore. It is a strong fit for short-to-medium Hellesylt calls when gondola and viewpoints are the priority.",
     },
     {
       question: "What is the activity level?",
@@ -92,5 +92,5 @@ export const mountStrandaPanoramicViewsExcursion: ExcursionData = {
     },
   ],
   bookingHref: "/excursions",
-  bookingLabel: "Book this excursion",
+  bookingLabel: "Explore this excursion",
 };
