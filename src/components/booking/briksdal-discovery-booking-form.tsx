@@ -128,7 +128,7 @@ export function BriksdalDiscoveryBookingForm() {
   function validateGuests(): string | null {
     if (underAdult) return "Please include at least one adult (12+).";
     if (overCapacity) {
-      return `Online requests are limited to ${MAX_GUESTS} guests. ${hellesyltCommercialConfig.overMaxGuidance}`;
+      return `Online bookings are limited to ${MAX_GUESTS} guests. ${hellesyltCommercialConfig.overMaxGuidance}`;
     }
     return null;
   }
@@ -191,7 +191,7 @@ export function BriksdalDiscoveryBookingForm() {
 
     if (!bookingLive) {
       setError(
-        `Online requests are not open yet. Email ${hellesyltCommercialConfig.email} and we will help you manually.`,
+        `Online booking is not open yet. Email ${hellesyltCommercialConfig.email} and we will help you manually.`,
       );
       return;
     }
@@ -219,7 +219,7 @@ export function BriksdalDiscoveryBookingForm() {
       return;
     }
     if (!leadAdultAck || !requestAck) {
-      setError("Please confirm the lead-traveller and request acknowledgements.");
+      setError("Please confirm the lead traveller and booking request acknowledgements.");
       return;
     }
 
@@ -316,13 +316,13 @@ export function BriksdalDiscoveryBookingForm() {
           role="status"
           className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950"
         >
-          <p className="font-semibold">Online request checkout is production-locked</p>
+          <p className="font-semibold">Online booking is not open yet</p>
           <p className="mt-2">
             You can review prices and requirements below. Live card payment is not
             enabled on the public site. For help, email{" "}
             <a
               className="font-medium underline"
-              href={`mailto:${hellesyltCommercialConfig.email}?subject=Briksdal%20Glacier%20Discovery%20request`}
+              href={`mailto:${hellesyltCommercialConfig.email}?subject=Briksdal%20Glacier%20Discovery%20booking`}
             >
               {hellesyltCommercialConfig.email}
             </a>
@@ -495,8 +495,8 @@ export function BriksdalDiscoveryBookingForm() {
             </label>
           </div>
           <p className="text-sm text-slate-600">
-            Party total: <strong>{partyTotal}</strong> / {MAX_GUESTS} · Display total{" "}
-            <strong>{formatEuro(totalEur)}</strong> EUR (server confirms the charge)
+            Party total: <strong>{partyTotal}</strong> / {MAX_GUESTS} · Total{" "}
+            <strong>{formatEuro(totalEur)}</strong>
           </p>
           {overCapacity ? (
             <p className="text-sm text-red-700">{hellesyltCommercialConfig.overMaxGuidance}</p>
@@ -591,11 +591,7 @@ export function BriksdalDiscoveryBookingForm() {
 
       {step === "review" ? (
         <section className="space-y-4 rounded-xl border border-slate-200 bg-surface-muted p-5">
-          <h2 className="text-xl font-bold text-slate-900">4. Review and request</h2>
-          <p className="text-sm text-slate-600">
-            Payment receives your request. It does not confirm the excursion.
-            Confirmation is emailed separately after we arrange your places.
-          </p>
+          <h2 className="text-xl font-bold text-slate-900">4. Review your booking</h2>
           <dl className="grid gap-3 text-sm text-slate-800 sm:grid-cols-2">
             <div>
               <dt className="font-semibold text-slate-500">Excursion</dt>
@@ -635,12 +631,24 @@ export function BriksdalDiscoveryBookingForm() {
               <dd className="text-lg font-bold">{formatEuro(totalEur)}</dd>
             </div>
           </dl>
-          <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
-            <li>{hellesyltCommercialConfig.cancellation}</li>
-            <li>{hellesyltCommercialConfig.paymentNotConfirmation}</li>
-            <li>{hellesyltCommercialConfig.unableToConfirm}</li>
-            <li>{hellesyltCommercialConfig.meetingInstructions}</li>
-          </ul>
+
+          <div className="rounded-lg border border-slate-200 bg-white px-4 py-4 text-sm leading-6 text-slate-700">
+            <h3 className="text-base font-bold text-slate-900">What happens next?</h3>
+            <p className="mt-2">
+              When you pay, we&apos;ll receive your booking request and payment.
+              We&apos;ll then confirm your excursion separately by email.
+            </p>
+            <p className="mt-2">
+              If we&apos;re unable to confirm your excursion, you&apos;ll receive a
+              full refund.
+            </p>
+            <p className="mt-2">
+              Free cancellation up to 7 days before your excursion.
+            </p>
+            <p className="mt-2 text-slate-600">
+              {hellesyltCommercialConfig.meetingInstructions}
+            </p>
+          </div>
 
           <label className="flex items-start gap-3 text-sm text-slate-800">
             <input
@@ -664,7 +672,7 @@ export function BriksdalDiscoveryBookingForm() {
             />
             <span>
               I confirm the lead traveller is aged 18 or over and will be responsible
-              for this request.
+              for this booking request.
             </span>
           </label>
           <label className="flex items-start gap-3 text-sm text-slate-800">
@@ -675,10 +683,10 @@ export function BriksdalDiscoveryBookingForm() {
               onChange={(e) => setRequestAck(e.target.checked)}
             />
             <span>
-              I understand payment takes my request and does not confirm the
-              excursion. Confirmation will be emailed separately when my places
-              are confirmed. If the excursion cannot be confirmed, the amount paid
-              will be refunded in full to my original payment method.
+              I understand that payment secures my booking request and does not
+              confirm the excursion. Confirmation will be emailed separately when my
+              places are confirmed. If the excursion cannot be confirmed, the amount
+              paid will be refunded in full to my original payment method.
             </span>
           </label>
 
@@ -694,7 +702,7 @@ export function BriksdalDiscoveryBookingForm() {
               {busy
                 ? "Starting checkout…"
                 : bookingLive
-                  ? `Pay ${formatEuro(totalEur)} and request`
+                  ? `Pay ${formatEuro(totalEur)} & request booking`
                   : "Online checkout locked"}
             </button>
             <Link href={`mailto:${siteConfig.contactEmail}`} className="btn-outline-dark">

@@ -8,9 +8,9 @@ import { buildPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = {
   ...buildPageMetadata({
-    title: "Request received, Briksdal Glacier Discovery",
+    title: "Booking request received, Briksdal Glacier Discovery",
     description:
-      "We have received your Briksdal Glacier Discovery excursion request. Confirmation follows separately.",
+      "We've received your payment and booking request for Briksdal Glacier Discovery. Confirmation follows separately by email.",
     path: "/book/briksdal-glacier-discovery/received",
     ogImage: siteImages.briksdalTour,
     ogImageAlt: imageAlts.briksdalTourCard,
@@ -21,19 +21,19 @@ export const metadata: Metadata = {
 export default function BriksdalDiscoveryReceivedPage() {
   return (
     <ContentPage
-      title="Request received"
-      lead="We've received your payment and your excursion request. This is not a booking confirmation."
+      title="Booking request received"
+      lead="Thank you. We've received your payment and booking request."
       heroImage={siteImages.briksdalTour}
       heroImageAlt={imageAlts.briksdalTourCard}
       pagePath="/book/briksdal-glacier-discovery/received"
-      pageDescription="Briksdal Glacier Discovery request received."
+      pageDescription="Briksdal Glacier Discovery booking request received."
       breadcrumbs={[
         { label: "Home", href: "/" },
         {
           label: "Briksdal Glacier Discovery",
           href: "/excursions/briksdal-glacier-discovery",
         },
-        { label: "Request received" },
+        { label: "Booking request received" },
       ]}
       showShipReassurance={false}
       relatedLinks={[
@@ -44,22 +44,28 @@ export default function BriksdalDiscoveryReceivedPage() {
         { label: "Contact", href: "/contact" },
       ]}
     >
-      <section className="space-y-4 leading-7">
-        <p>
-          We&apos;ve received your payment and your excursion request. This is not
-          a booking confirmation. We&apos;re arranging your Briksdal Glacier
-          Discovery excursion and will email you again once it is confirmed.
-        </p>
+      <section className="space-y-5 leading-7">
         <BookingReferenceBanner />
-        <ul className="list-disc space-y-2 pl-5">
-          <li>Payment successful</li>
-          <li>Excursion request received, awaiting confirmation</li>
-          <li>We&apos;ll email you separately when the excursion is confirmed</li>
-          <li>
+
+        <div className="rounded-xl border border-slate-200 border-t-2 border-t-[var(--norway-blue)] bg-white px-5 py-5 shadow-sm">
+          <h2 className="text-lg font-bold text-slate-900 sm:text-xl">
+            What happens next?
+          </h2>
+          <p className="mt-2 text-slate-700">
+            We&apos;ll now confirm your excursion. As soon as it&apos;s confirmed,
+            we&apos;ll email you with the next steps.
+          </p>
+          <p className="mt-2 text-slate-700">
             If we&apos;re unable to confirm your excursion, you&apos;ll receive a
-            full refund to your original payment method
-          </li>
-        </ul>
+            full refund.
+          </p>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          Your tour ticket, including your meeting instructions, will be sent
+          separately once your excursion is confirmed.
+        </p>
+
         <p>
           <Link href="/excursions/briksdal-glacier-discovery" className="content-link">
             Return to excursion notes

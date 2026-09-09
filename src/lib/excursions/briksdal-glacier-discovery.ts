@@ -97,5 +97,5 @@ export const briksdalGlacierDiscoveryExcursion: ExcursionData = {
   bookingLabel: "Book now",
   ctaTitle: "Book Briksdal Glacier Discovery",
   ctaText:
-    "Review the notes on this page, then continue to booking. Payment takes your request. Confirmation follows separately after we secure your places.",
+    "Review the notes on this page, then continue to book. You'll secure your booking request with payment, and we'll confirm your excursion separately.",
 };

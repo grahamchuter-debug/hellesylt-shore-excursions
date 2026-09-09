@@ -5,35 +5,35 @@ export const REQUEST_COPY = {
   primaryCta: "Book this excursion",
   bookingEngineHeading: "Book your excursion",
   supporting:
-    "Choose your cruise date and complete payment to send your booking request. Confirmation is emailed separately after we arrange your excursion.",
-  reviewHeading: "Request your excursion",
+    "Choose your cruise date and complete payment to send your booking request. We'll confirm your excursion separately by email.",
+  reviewHeading: "Review your booking",
   payCtaPrefix: "Pay",
-  payCtaSuffix: "& request",
+  payCtaSuffix: "& request booking",
   guestsHeading: "How many people are travelling?",
   flatGuestNote: "Same price per guest for this excursion.",
   groupOverMaxTitle: (maxGuests: number) => `Travelling with more than ${maxGuests} guests?`,
   groupOverMaxBody: "Ask us about a larger group and we'll help arrange the best option.",
   groupOverMaxCta: "Ask us about this excursion",
-  subjectToConfirmationTitle: "Subject to confirmation",
+  subjectToConfirmationTitle: "Book with confidence",
   subjectToConfirmationParagraphs: [
-    "Payment receives your request — it does not confirm the excursion by itself.",
+    "Secure your booking request with payment today. We'll confirm your excursion separately by email.",
     "Your booking is only confirmed when you receive our confirmation email.",
-    "If your excursion cannot be confirmed, your payment will be refunded in full.",
+    "If we're unable to confirm your excursion, you'll receive a full refund.",
   ],
   consentLabel:
-    "I understand this is a booking request. Payment is taken when I submit my request and does not confirm the excursion. Confirmation will be emailed separately when my places are confirmed. If the excursion cannot be confirmed, the amount paid will be refunded in full to my original payment method.",
-  receivedHeadline: "Request received",
+    "I understand that payment secures my booking request and does not confirm the excursion. Confirmation will be emailed separately when my places are confirmed. If the excursion cannot be confirmed, the amount paid will be refunded in full to my original payment method.",
+  receivedHeadline: "Booking request received",
   receivedBody:
-    "We've received your payment and your excursion request. This is not a booking confirmation. We're arranging your excursion and will email you again once it is confirmed.",
+    "Thank you. We've received your payment and booking request. We'll confirm your excursion separately by email.",
   paymentSuccessfulLabel: "Payment successful",
   awaitingConfirmationLabel: "Awaiting confirmation",
-  preparingHeadline: "Payment received — preparing your booking request",
+  preparingHeadline: "Payment received, preparing your booking request",
   preparingBody:
     "We're confirming your payment with our payment provider. This page will update when your booking request is ready. Your excursion is not confirmed yet.",
   nextSteps:
-    "We'll arrange your excursion and email you. Keep your booking reference — you'll need it if you get in touch.",
+    "We'll confirm your excursion and email you with the next steps. Keep your booking reference if you need to get in touch.",
   childPricingNote:
-    "Child and infant prices are not confirmed for this excursion yet. You can include them in your request; they are not charged at the adult rate. We'll confirm any child or infant rate before taking extra payment.",
+    "Child and infant prices are not confirmed for this excursion yet. You can include them in your booking request; they are not charged at the adult rate. We'll confirm any child or infant rate before taking extra payment.",
 } as const;
 
 export const INSTANT_COPY = {

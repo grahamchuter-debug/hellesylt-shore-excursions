@@ -71,7 +71,7 @@ export const HELLESYLT_CANCELLATION_COPY = {
   /** Automated confirmation only — supplier tour ticket (joining document) is sent manually. */
   meetingInstructions:
     "Your tour ticket, including your meeting instructions, will be sent separately.",
-  overMaxGuidance: "For groups larger than 45, email hello@hellesyltshoreexcursions.com before requesting.",
+  overMaxGuidance: "For groups larger than 45, email hello@hellesyltshoreexcursions.com before booking.",
 } as const;
 
 const BRIKSDAL: BookableProductConfig = {
