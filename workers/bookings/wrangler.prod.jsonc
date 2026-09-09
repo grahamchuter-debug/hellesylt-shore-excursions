@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "hellesylt-bookings-prod",
-      "database_id": "00000000-0000-4000-8000-000000000002",
+      "database_id": "97a8314c-21b7-4433-8970-141be4979511",
       "migrations_dir": "migrations"
     }
   ],
@@ -26,6 +26,6 @@
     "SITE_BASE_URL": "https://hellesyltshoreexcursions.com",
     "ORIGINATING_SITE": "hellesyltshoreexcursions.com",
     "ORIGINATING_PORT": "Hellesylt, Norway",
-    "OPERATOR_PORTAL_BASE_URL": "https://hellesylt-bookings-prod.example"
+    "OPERATOR_PORTAL_BASE_URL": "https://hellesylt-bookings-prod.dark-violet-8d91.workers.dev"
   }
 }

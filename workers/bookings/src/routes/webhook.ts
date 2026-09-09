@@ -83,15 +83,26 @@ export async function handleStripeWebhook(request: Request, env: Env, ctx?: Exec
           const fullyRefunded =
             charge.refunded || (typeof charge.amount_refunded === "number" && charge.amount_refunded >= charge.amount);
           let refundId = refundIdFromCharge(charge);
-          // Stripe often omits refunds.data on webhook payloads; expand when missing (O-12).
+          const existing = await getBookingByPaymentIntentId(env, paymentIntentId);
+          // Never wipe a persisted re_ id when the webhook payload omits refunds.data.
+          if (!refundId && existing?.stripe_refund_id?.startsWith("re_")) {
+            refundId = existing.stripe_refund_id;
+          }
+          // Stripe often omits refunds.data on webhook payloads; retrieve+expand when missing (H-3 / O-12).
           if (!refundId && charge.id) {
             try {
               const stripe = createStripe(env);
               const expanded = await stripe.charges.retrieve(charge.id, { expand: ["refunds"] });
               refundId = refundIdFromCharge(expanded);
             } catch (expandErr) {
-              console.error("charge_refunds_expand_failed", String(expandErr));
+              console.error("charge_refunds_expand_failed", charge.id, paymentIntentId, String(expandErr));
+              // Fail closed so Stripe retries; do not claim the event without a recoverable refund id.
+              throw expandErr;
             }
+          }
+          if (fullyRefunded && !refundId) {
+            console.error("charge_refunded_missing_refund_id", charge.id, paymentIntentId);
+            throw new Error("charge_refunded_missing_refund_id");
           }
           await markRefundedFromCharge(env, paymentIntentId, fullyRefunded, refundId);
         }

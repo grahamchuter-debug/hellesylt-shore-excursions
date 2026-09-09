@@ -5,7 +5,7 @@ import type { BookableProductConfig } from "../../../shared/world-booking/types"
  * Live charging requires this code flag AND env.LIVE_PAYMENTS_UNLOCK.
  * A single environment variable must never enable live cards.
  */
-/** H-1 scaffold: live code flag OFF until Graham unlock. */
+/** Restored after H-3 controlled LIVE proof — public launch remains gated. */
 export const LIVE_PAYMENTS_CODE_ENABLED = false;
 
 export const LIVE_UNLOCK_PHRASE = "HELLESYLT_LIVE_UNLOCK";
