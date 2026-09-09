@@ -4,26 +4,23 @@ import type { AgeBand, BookableProductConfig, ProductCapacity, ProductPricing } 
 /**
  * Operational routing: Wow A Tour ops mailbox for Graham’s manual fulfilment.
  * Customer Reply-To stays hello@hellesyltshoreexcursions.com (EMAIL_REPLY_TO / bookingEmail).
- * routingStatus remains preview_placeholder until fulfilment partner is known (blocks live checkout).
+ * Public customers never see supplier costs or margins.
+ * Fulfilment: DIRECT_SUPPLIER_MANUAL (same operational model as Olden).
  */
 const OPERATIONS = {
   id: "hellesylt-shore-ops",
   displayName: "Hellesylt Shore Excursions Operations",
   notificationEmail: "info@wowatour.com",
-  routingStatus: "preview_placeholder" as const,
+  routingStatus: "production_ready" as const,
 };
 
 const REQUEST_SETTLEMENT = "charge_refund" as const;
 
-/**
- * TECHNICAL online cap only (preview_unapproved).
- * Commercial MAX_GUESTS_PER_BOOKING = UNKNOWN until Graham approval.
- * Never describe 99 as a published commercial limit.
- */
+/** Graham online max — never describe as supplier / vehicle / coach capacity. */
 const HELLESYLT_CAPACITY: ProductCapacity = {
   minGuests: 1,
-  maxGuestsPerBooking: 99,
-  maxGuestsPerBookingSource: "preview_unapproved",
+  maxGuestsPerBooking: 45,
+  maxGuestsPerBookingSource: "approved",
   supplierGroupSize: null,
   maxGuestsPerGuide: null,
 };
@@ -49,23 +46,24 @@ function adultChildEur(adultAmount: number, childAmount: number, infantAmount: n
 }
 
 const SHARED_PENDING = [
-  "MAX_GUESTS_PER_BOOKING = UNKNOWN (commercial). Technical online cap 99 with maxGuestsPerBookingSource=preview_unapproved only.",
-  "Customer cancellation terms: OPEN FACT pending Graham approval (do not publish a free-cancel deadline until approved).",
+  "Customer cancellation APPROVED: free up to 7 days before excursion. Inside-7-day customer cancel semantics not authored beyond that (do not invent).",
   "Unable to confirm after payment: full refund to original payment method.",
   "Meeting: Hellesylt village near cruise pier or tender landing; exact tour ticket / meeting instructions sent separately after confirmation.",
+  "Fulfilment: DIRECT_SUPPLIER_MANUAL — ops manually checks/secures supplier; operator CONFIRM; customer confirmation email; supplier ticket sent manually.",
   "Payment received ≠ excursion confirmed.",
-  "Supplier routingStatus=preview_placeholder until fulfilment is known (blocks live Checkout).",
-  "Supplier costs, cancellation deadline, child-seat rules: UNKNOWN (do not invent).",
+  "Online max 45 guests per booking (Graham online limit — not supplier capacity).",
   "LIVE_PAYMENTS_CODE_ENABLED false until Graham unlock (HELLESYLT_LIVE_UNLOCK).",
 ] as const;
 
 /**
- * Cancellation copy for Hellesylt H-1.
- * Do not invent a 48-hour customer cancellation deadline.
+ * Cancellation copy for Hellesylt.
+ * Authoritative free window: 7 days. Do not invent inside-window non-refund rules.
+ * Do not copy Olden 48-hour terms.
  */
 export const HELLESYLT_CANCELLATION_COPY = {
   customerCancellation:
-    "Customer cancellation terms are pending Graham approval and are not yet published. If we are unable to confirm your excursion after payment, you will receive a full refund to your original payment method.",
+    "Free cancellation up to 7 days before your excursion. If we are unable to confirm your excursion after payment, you will receive a full refund to your original payment method.",
+  freeWindow: "Free cancellation up to 7 days before your excursion.",
   unableToConfirm:
     "If we are unable to confirm your excursion after payment, you will receive a full refund to your original payment method.",
   paymentNotConfirmation:
@@ -73,6 +71,7 @@ export const HELLESYLT_CANCELLATION_COPY = {
   /** Automated confirmation only — supplier tour ticket (joining document) is sent manually. */
   meetingInstructions:
     "Your tour ticket, including your meeting instructions, will be sent separately.",
+  overMaxGuidance: "For groups larger than 45, email hello@hellesyltshoreexcursions.com before requesting.",
 } as const;
 
 const BRIKSDAL: BookableProductConfig = {
@@ -102,13 +101,13 @@ const BRIKSDAL: BookableProductConfig = {
   ],
   supplierReferenceNotes: [
     "INTERNAL ONLY — never publish to customers, emails, or public HTML",
-    "fulfilment_mode=UNKNOWN pending Graham",
+    "fulfilment_mode=DIRECT_SUPPLIER_MANUAL",
     "supplier_costs=UNKNOWN (do not invent adult_cost / child_cost / margins)",
-    "routingStatus=preview_placeholder until fulfilment partner confirmed",
+    "routingStatus=production_ready · ops mailbox info@wowatour.com",
     "Selling: Adult EUR 169 · Child EUR 109 · Infant EUR 0",
-    "Customer cancellation deadline: UNKNOWN pending Graham approval",
+    "Customer cancellation: Free cancellation up to 7 days before your excursion.",
     "Unable to confirm after payment: full refund to original payment method",
-    "MAX_GUESTS_PER_BOOKING commercial = UNKNOWN; technical maxGuestsPerBooking=99 preview_unapproved only",
+    "MAX_GUESTS_PER_BOOKING=45 (Graham online limit — not supplier capacity)",
   ],
 };
 

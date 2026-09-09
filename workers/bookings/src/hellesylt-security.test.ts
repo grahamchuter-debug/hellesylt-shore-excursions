@@ -79,6 +79,7 @@ test("LIVE_PAYMENTS_CODE_ENABLED is false for Hellesylt H-1", () => {
 
 test("liveCheckoutBlock blocks on live code flag before other gates", () => {
   const product = findHellesyltBookingProduct(PRODUCT_ID)!;
+  assert.equal(product.capacity.maxGuestsPerBookingSource, "approved");
   const blocked = liveCheckoutBlock(
     {
       PAYMENTS_MODE: "live",
@@ -93,6 +94,7 @@ test("liveCheckoutBlock blocks on live code flag before other gates", () => {
   );
   assert.ok(blocked);
   assert.equal(blocked!.code, "LIVE_PAYMENTS_BLOCKED");
+  assert.notEqual(blocked!.code, "CAPACITY_UNAPPROVED");
 });
 
 test("BOOKINGS_ENABLED=false kill switch", () => {
@@ -107,8 +109,8 @@ test("Briksdal Discovery request mode with EUR 169/109/0", () => {
   assert.equal(product.pricing.adultAmount, 169);
   assert.equal(product.pricing.childAmount, 109);
   assert.equal(product.pricing.infantAmount, 0);
-  assert.equal(product.capacity.maxGuestsPerBooking, 99);
-  assert.equal(product.capacity.maxGuestsPerBookingSource, "preview_unapproved");
+  assert.equal(product.capacity.maxGuestsPerBooking, 45);
+  assert.equal(product.capacity.maxGuestsPerBookingSource, "approved");
   assert.equal(HELLESYLT_BOOKING_PRODUCTS.length, 1);
 });
 
@@ -124,10 +126,10 @@ test("zero-adult booking rejected", () => {
   assert.throws(() => calculateBookingQuote(product, { adults: 0, children: 1, infants: 0 }));
 });
 
-test("technical max 99 guests ok; 100 guests rejected", () => {
+test("approved max 45 guests ok; 46 guests rejected", () => {
   const product = findHellesyltBookingProduct(PRODUCT_ID)!;
-  assert.doesNotThrow(() => calculateBookingQuote(product, { adults: 99, children: 0, infants: 0 }));
-  assert.throws(() => calculateBookingQuote(product, { adults: 100, children: 0, infants: 0 }));
+  assert.doesNotThrow(() => calculateBookingQuote(product, { adults: 45, children: 0, infants: 0 }));
+  assert.throws(() => calculateBookingQuote(product, { adults: 46, children: 0, infants: 0 }));
 });
 
 test("preview Worker records requested booking with W2HSY- prefix", async () => {
@@ -331,7 +333,10 @@ test("production live code flag disabled in live-gate source", () => {
   const src = readFileSync(join(here, "live-gate.ts"), "utf8");
   assert.match(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/);
   assert.match(src, /CAPACITY_UNAPPROVED/);
+  assert.match(src, /maxGuestsPerBookingSource !== "approved"/);
   assert.match(src, /HELLESYLT_LIVE_UNLOCK/);
+  const product = findHellesyltBookingProduct(PRODUCT_ID)!;
+  assert.equal(product.capacity.maxGuestsPerBookingSource, "approved");
 });
 
 test("service name is hellesylt-bookings", () => {
@@ -357,4 +362,33 @@ test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler stays locked", () =
   assert.doesNotMatch(prodCfg, /oldenshoreexcursions|olden-bookings/);
   assert.doesNotMatch(testCfg, /oldenshoreexcursions|olden-bookings/);
   assert.doesNotMatch(prodCfg, /localhost:3000/);
+});
+
+test("package default build does not unlock TEST UI; TEST scripts inject Worker URL", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const pkg = JSON.parse(readFileSync(join(here, "../../../package.json"), "utf8")) as {
+    scripts: Record<string, string>;
+  };
+  assert.equal(pkg.scripts.build.includes("HELLESYLT_BOOKING_UI"), false);
+  assert.match(pkg.scripts["dev:booking-test"] || "", /NEXT_PUBLIC_HELLESYLT_BOOKING_UI=test/);
+  assert.match(
+    pkg.scripts["dev:booking-test"] || "",
+    /NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL=https:\/\/hellesylt-bookings-test\.dark-violet-8d91\.workers\.dev/,
+  );
+  assert.match(pkg.scripts["build:booking-test"] || "", /NEXT_PUBLIC_HELLESYLT_BOOKING_UI=test/);
+  assert.match(
+    pkg.scripts["build:booking-test"] || "",
+    /NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL=https:\/\/hellesylt-bookings-test\.dark-violet-8d91\.workers\.dev/,
+  );
+});
+
+test("client commercial-config does not hardcode TEST Worker origin", () => {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const src = readFileSync(
+    join(here, "../../../src/lib/booking/commercial-config.ts"),
+    "utf8",
+  );
+  assert.match(src, /NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL/);
+  assert.doesNotMatch(src, /hellesylt-bookings-test\.dark-violet/);
+  assert.doesNotMatch(src, /https:\/\/hellesylt-bookings-test/);
 });

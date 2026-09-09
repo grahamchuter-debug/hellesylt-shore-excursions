@@ -10,7 +10,8 @@
  *
  * TEST unlock (explicit, build-time):
  *   NEXT_PUBLIC_HELLESYLT_BOOKING_UI=test
- *   → targets the isolated TEST Worker URL when configured
+ *   NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL=<isolated TEST Worker origin>
+ *   → targets only the injected TEST Worker URL (see package.json *:booking-test)
  *
  * Future production unlock (explicit; not used by normal build/deploy):
  *   NEXT_PUBLIC_HELLESYLT_BOOKING_UI=live
@@ -19,6 +20,8 @@
  *
  * Production deploys must NOT set those envs. Without them, status stays locked
  * and getHellesyltBookingsApiUrl() returns null (never a TEST Worker).
+ * The TEST Worker origin is never hardcoded in this module so default/live
+ * client bundles cannot embed it.
  */
 
 import { HELLESYLT_CANCELLATION_COPY } from "../../../shared/destinations/hellesylt-products";
@@ -32,16 +35,16 @@ export const HELLESYLT_PUBLIC_BOOKING_STATUS_DEFAULT =
   "PRODUCTION_READY_LOCKED" as const satisfies HellesyltPublicBookingStatus;
 
 /**
- * Isolated Cloudflare TEST booking Worker placeholder (H-1).
- * Live production builds must not embed this URL — only the TEST UI env keeps it.
- * Replace with the real workers.dev URL after hellesylt-bookings-test is created.
+ * Isolated Cloudflare TEST booking Worker (H-2).
+ * URL comes only from NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL when UI=test.
+ * Default/live builds omit that env so this constant stays empty and no TEST
+ * origin string is present in the client source graph.
  */
 export const HELLESYLT_TEST_BOOKINGS_API_URL =
   process.env.NEXT_PUBLIC_HELLESYLT_BOOKING_UI === "test"
-    ? (
-        process.env.NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL?.trim() ||
-        "https://hellesylt-bookings-test.example.workers.dev"
-      )
+    ? (process.env.NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL ?? "")
+        .trim()
+        .replace(/\/$/, "")
     : "";
 
 export type HellesyltBookingsApiTarget =
@@ -53,6 +56,9 @@ type EnvLike = Record<string, string | undefined>;
 
 function readEnv(env: EnvLike | undefined): EnvLike {
   if (env) return env;
+  // NEXT_PUBLIC_* must be referenced as static process.env.KEY members so Next can
+  // inline them into the client bundle. Casting process.env and reading dynamically
+  // leaves the browser without values → PRODUCTION_READY_LOCKED after hydration.
   return {
     NEXT_PUBLIC_HELLESYLT_BOOKING_UI: process.env.NEXT_PUBLIC_HELLESYLT_BOOKING_UI,
     NEXT_PUBLIC_HELLESYLT_BOOKINGS_API_URL:
@@ -120,11 +126,12 @@ export const hellesyltCommercialConfig = {
   get defaultPublicBookingStatus(): HellesyltPublicBookingStatus {
     return resolveHellesyltPublicBookingStatus();
   },
-  /** Public cancellation block: no invented free-cancel deadline. */
+  /** Public cancellation: free up to 7 days before excursion. */
   cancellation: HELLESYLT_CANCELLATION_COPY.customerCancellation,
   paymentNotConfirmation: HELLESYLT_CANCELLATION_COPY.paymentNotConfirmation,
   unableToConfirm: HELLESYLT_CANCELLATION_COPY.unableToConfirm,
   meetingInstructions: HELLESYLT_CANCELLATION_COPY.meetingInstructions,
+  overMaxGuidance: HELLESYLT_CANCELLATION_COPY.overMaxGuidance,
   products: {
     "briksdal-glacier-discovery": {
       productId: "briksdal-glacier-discovery",
@@ -137,10 +144,8 @@ export const hellesyltCommercialConfig = {
       childEur: 109,
       infantEur: 0,
       durationLabel: "Approx. 6 hours 30 minutes",
-      /** Commercial max unknown; technical stepper ceiling only. */
-      maxGuests: null as number | null,
-      maxGuestsStatus: "UNKNOWN" as const,
-      technicalGuestCeiling: 99,
+      maxGuests: 45,
+      maxGuestsStatus: "approved" as const,
       requiresHikingAck: true,
       get publicBookingStatus(): HellesyltPublicBookingStatus {
         return resolveHellesyltPublicBookingStatus();

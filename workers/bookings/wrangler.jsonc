@@ -9,14 +9,14 @@
   },
   "dev": {
     "ip": "localhost",
-    "port": 8795,
+    "port": 8796,
     "local_protocol": "http"
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "hellesylt-bookings-test",
-      "database_id": "00000000-0000-4000-8000-000000000001",
+      "database_id": "e166c49b-bcee-4cb6-9ccf-3b5f99c50d49",
       "migrations_dir": "migrations"
     }
   ],
@@ -31,6 +31,6 @@
     "SITE_BASE_URL": "http://localhost:3000",
     "ORIGINATING_SITE": "hellesyltshoreexcursions.com",
     "ORIGINATING_PORT": "Hellesylt, Norway",
-    "OPERATOR_PORTAL_BASE_URL": "https://hellesylt-bookings-test.example"
+    "OPERATOR_PORTAL_BASE_URL": "https://hellesylt-bookings-test.dark-violet-8d91.workers.dev"
   }
 }

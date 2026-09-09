@@ -178,10 +178,19 @@ if (!existsSync(productPath)) {
   } else {
     pass("Hellesylt product id and EUR 169/109/0 present");
   }
-  if (!/maxGuestsPerBookingSource:\s*"preview_unapproved"/.test(productSrc)) {
-    fail("MAX guests must remain preview_unapproved until Graham supplies commercial max");
+  if (!/maxGuestsPerBookingSource:\s*"approved"/.test(productSrc)) {
+    fail("MAX guests source must be approved");
+  } else if (!/maxGuestsPerBooking:\s*45/.test(productSrc)) {
+    fail("MAX guests per booking must be 45");
   } else {
-    pass("max guests still preview_unapproved (UNKNOWN commercially)");
+    pass("max guests approved at 45");
+  }
+  if (!/Free cancellation up to 7 days/.test(productSrc)) {
+    fail("Hellesylt cancellation must state free up to 7 days");
+  } else if (/48 hours/.test(productSrc)) {
+    fail("Hellesylt product file must not contain Olden 48-hour cancellation");
+  } else {
+    pass("cancellation is 7 days (not 48 hours)");
   }
 }
 

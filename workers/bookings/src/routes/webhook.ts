@@ -82,7 +82,18 @@ export async function handleStripeWebhook(request: Request, env: Env, ctx?: Exec
         if (paymentIntentId) {
           const fullyRefunded =
             charge.refunded || (typeof charge.amount_refunded === "number" && charge.amount_refunded >= charge.amount);
-          await markRefundedFromCharge(env, paymentIntentId, fullyRefunded, refundIdFromCharge(charge));
+          let refundId = refundIdFromCharge(charge);
+          // Stripe often omits refunds.data on webhook payloads; expand when missing (O-12).
+          if (!refundId && charge.id) {
+            try {
+              const stripe = createStripe(env);
+              const expanded = await stripe.charges.retrieve(charge.id, { expand: ["refunds"] });
+              refundId = refundIdFromCharge(expanded);
+            } catch (expandErr) {
+              console.error("charge_refunds_expand_failed", String(expandErr));
+            }
+          }
+          await markRefundedFromCharge(env, paymentIntentId, fullyRefunded, refundId);
         }
         break;
       }

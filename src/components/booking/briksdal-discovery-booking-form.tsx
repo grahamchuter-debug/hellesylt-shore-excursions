@@ -25,7 +25,7 @@ import {
 } from "../../../shared/world-booking";
 
 const PRODUCT = hellesyltCommercialConfig.products["briksdal-glacier-discovery"];
-const GUEST_CEILING = PRODUCT.technicalGuestCeiling;
+const MAX_GUESTS = PRODUCT.maxGuests;
 
 type Step = "cruise" | "guests" | "details" | "review";
 type ShipChoice = "schedule" | "custom";
@@ -104,7 +104,7 @@ export function BriksdalDiscoveryBookingForm() {
     infants * PRODUCT.infantEur;
 
   const underAdult = adults < 1;
-  const overTechnicalCeiling = partyTotal > GUEST_CEILING;
+  const overCapacity = partyTotal > MAX_GUESTS;
 
   function go(next: Step) {
     setError(null);
@@ -127,8 +127,8 @@ export function BriksdalDiscoveryBookingForm() {
 
   function validateGuests(): string | null {
     if (underAdult) return "Please include at least one adult (12+).";
-    if (overTechnicalCeiling) {
-      return `Please keep the party to ${GUEST_CEILING} guests or fewer for an online request preview, or email ${hellesyltCommercialConfig.email}.`;
+    if (overCapacity) {
+      return `Online requests are limited to ${MAX_GUESTS} guests. ${hellesyltCommercialConfig.overMaxGuidance}`;
     }
     return null;
   }
@@ -465,7 +465,7 @@ export function BriksdalDiscoveryBookingForm() {
               <input
                 type="number"
                 min={1}
-                max={GUEST_CEILING}
+                max={MAX_GUESTS}
                 value={adults}
                 onChange={(e) => setAdults(Number(e.target.value) || 0)}
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -476,7 +476,7 @@ export function BriksdalDiscoveryBookingForm() {
               <input
                 type="number"
                 min={0}
-                max={GUEST_CEILING}
+                max={MAX_GUESTS}
                 value={children}
                 onChange={(e) => setChildren(Number(e.target.value) || 0)}
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -487,7 +487,7 @@ export function BriksdalDiscoveryBookingForm() {
               <input
                 type="number"
                 min={0}
-                max={GUEST_CEILING}
+                max={MAX_GUESTS}
                 value={infants}
                 onChange={(e) => setInfants(Number(e.target.value) || 0)}
                 className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
@@ -495,21 +495,11 @@ export function BriksdalDiscoveryBookingForm() {
             </label>
           </div>
           <p className="text-sm text-slate-600">
-            Party total: <strong>{partyTotal}</strong>
-            {PRODUCT.maxGuestsStatus === "UNKNOWN" ? (
-              <> · Online party size limit pending confirmation</>
-            ) : null}{" "}
-            · Display total <strong>{formatEuro(totalEur)}</strong> EUR (server
-            confirms the charge)
+            Party total: <strong>{partyTotal}</strong> / {MAX_GUESTS} · Display total{" "}
+            <strong>{formatEuro(totalEur)}</strong> EUR (server confirms the charge)
           </p>
-          {overTechnicalCeiling ? (
-            <p className="text-sm text-red-700">
-              Please email{" "}
-              <Link href="/contact" className="content-link">
-                {hellesyltCommercialConfig.email}
-              </Link>{" "}
-              for larger groups.
-            </p>
+          {overCapacity ? (
+            <p className="text-sm text-red-700">{hellesyltCommercialConfig.overMaxGuidance}</p>
           ) : null}
 
           <div className="flex flex-wrap gap-3">
@@ -646,13 +636,10 @@ export function BriksdalDiscoveryBookingForm() {
             </div>
           </dl>
           <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+            <li>{hellesyltCommercialConfig.cancellation}</li>
             <li>{hellesyltCommercialConfig.paymentNotConfirmation}</li>
             <li>{hellesyltCommercialConfig.unableToConfirm}</li>
             <li>{hellesyltCommercialConfig.meetingInstructions}</li>
-            <li>
-              Full customer cancellation terms will be confirmed before live
-              checkout opens.
-            </li>
           </ul>
 
           <label className="flex items-start gap-3 text-sm text-slate-800">
@@ -701,7 +688,7 @@ export function BriksdalDiscoveryBookingForm() {
             </button>
             <button
               type="submit"
-              disabled={busy || overTechnicalCeiling || underAdult || !bookingLive}
+              disabled={busy || overCapacity || underAdult || !bookingLive}
               className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
             >
               {busy

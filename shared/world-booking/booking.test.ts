@@ -10,7 +10,11 @@ import {
   HELLESYLT_CANCELLATION_COPY,
 } from "../destinations/hellesylt-products";
 import { hellesyltBookingCore } from "../destinations/hellesylt";
-import { findOldenBookingProduct, OLDEN_BOOKING_PRODUCTS } from "../destinations/olden-products";
+import {
+  findOldenBookingProduct,
+  OLDEN_BOOKING_PRODUCTS,
+  OLDEN_CANCELLATION_COPY,
+} from "../destinations/olden-products";
 import { oldenBookingCore } from "../destinations/olden";
 import {
   assertClientTotalMatches,
@@ -44,9 +48,12 @@ test("Briksdal Discovery EUR adult 169 child 109 infant 0", () => {
   assert.equal(briksdal!.pricing.infantAmount, 0);
   assert.equal(briksdal!.pricing.infantPricingStatus, "priced");
   assert.equal(calculateBookingQuote(briksdal!, { adults: 1, children: 0, infants: 0 }).amountCents, 16900);
-  assert.equal(calculateBookingQuote(briksdal!, { adults: 1, children: 1, infants: 0 }).amountCents, 27800);
+  assert.equal(briksdal!.pricing.childAmount * 100, 10900);
+  assert.equal(briksdal!.pricing.infantAmount * 100, 0);
+  assert.equal(calculateBookingQuote(briksdal!, { adults: 2, children: 0, infants: 0 }).amountCents, 33800);
+  assert.equal(calculateBookingQuote(briksdal!, { adults: 2, children: 1, infants: 0 }).amountCents, 44700);
+  assert.equal(calculateBookingQuote(briksdal!, { adults: 1, children: 1, infants: 1 }).amountCents, 27800);
   assert.equal(calculateBookingQuote(briksdal!, { adults: 1, children: 0, infants: 1 }).amountCents, 16900);
-  assert.equal(calculateBookingQuote(briksdal!, { adults: 2, children: 1, infants: 1 }).amountCents, 44700);
 });
 
 test("adult required; infant free still requires adult", () => {
@@ -54,15 +61,15 @@ test("adult required; infant free still requires adult", () => {
   assert.throws(() => calculateBookingQuote(briksdal!, { adults: 0, children: 0, infants: 1 }));
 });
 
-test("technical max 99 guests with preview_unapproved capacity source", () => {
-  assert.equal(briksdal!.capacity.maxGuestsPerBooking, 99);
-  assert.equal(briksdal!.capacity.maxGuestsPerBookingSource, "preview_unapproved");
-  assert.doesNotThrow(() => calculateBookingQuote(briksdal!, { adults: 99, children: 0, infants: 0 }));
-  assert.throws(() => calculateBookingQuote(briksdal!, { adults: 100, children: 0, infants: 0 }));
+test("approved max 45 guests; 46 and zero adults rejected", () => {
+  assert.equal(briksdal!.capacity.maxGuestsPerBooking, 45);
+  assert.equal(briksdal!.capacity.maxGuestsPerBookingSource, "approved");
+  assert.doesNotThrow(() => calculateBookingQuote(briksdal!, { adults: 45, children: 0, infants: 0 }));
+  assert.throws(() => calculateBookingQuote(briksdal!, { adults: 46, children: 0, infants: 0 }));
   assert.throws(() => calculateBookingQuote(briksdal!, { adults: 0, children: 0, infants: 0 }));
 });
 
-test("Olden stub prices remain EUR 96/56/0 unchanged", () => {
+test("Olden stub remains EUR 96/56/0 and 48-hour cancellation (anti-leakage)", () => {
   const olden = findOldenBookingProduct("briksdal-glacier-olden-lake");
   assert.ok(olden);
   assert.equal(OLDEN_BOOKING_PRODUCTS.length, 1);
@@ -72,6 +79,9 @@ test("Olden stub prices remain EUR 96/56/0 unchanged", () => {
   assert.equal(calculateBookingQuote(olden!, { adults: 1, children: 0, infants: 0 }).amountCents, 9600);
   assert.equal(calculateBookingQuote(olden!, { adults: 1, children: 1, infants: 0 }).amountCents, 15200);
   assert.equal(oldenBookingCore.bookingRefPrefix, "W2ODE");
+  assert.match(OLDEN_CANCELLATION_COPY.customerCancellation, /48 hours/i);
+  assert.doesNotMatch(OLDEN_CANCELLATION_COPY.customerCancellation, /7 days/i);
+  assert.doesNotMatch(HELLESYLT_CANCELLATION_COPY.customerCancellation, /48 hours/i);
 });
 
 test("client total must match server quote", () => {
@@ -129,9 +139,10 @@ test("customer and cruise validation", () => {
   );
 });
 
-test("cancellation copy is open pending plus unable-to-confirm refund", () => {
-  assert.match(HELLESYLT_CANCELLATION_COPY.customerCancellation, /pending Graham approval/i);
+test("cancellation copy is free up to 7 days plus unable-to-confirm refund", () => {
+  assert.match(HELLESYLT_CANCELLATION_COPY.customerCancellation, /7 days/i);
   assert.doesNotMatch(HELLESYLT_CANCELLATION_COPY.customerCancellation, /48 hours/);
+  assert.match(HELLESYLT_CANCELLATION_COPY.freeWindow, /7 days/i);
   assert.match(HELLESYLT_CANCELLATION_COPY.unableToConfirm, /full refund/i);
   assert.match(HELLESYLT_CANCELLATION_COPY.paymentNotConfirmation, /not.*confirmed/i);
   assert.match(HELLESYLT_CANCELLATION_COPY.meetingInstructions, /tour ticket/i);
@@ -193,8 +204,11 @@ test("request mode live catalogue for Briksdal Discovery", () => {
   assert.equal(briksdal!.availability, "live");
   assert.equal(briksdal!.pricing.currency, "EUR");
   assert.equal(briksdal!.paymentSettlement, "charge_refund");
-  assert.equal(briksdal!.supplier.routingStatus, "preview_placeholder");
+  assert.equal(briksdal!.supplier.routingStatus, "production_ready");
   assert.equal(briksdal!.durationLabel, "Approx. 6 hours 30 minutes");
+  const notes = (briksdal!.supplierReferenceNotes || []).join("\n");
+  assert.match(notes, /DIRECT_SUPPLIER_MANUAL/);
+  assert.match(notes, /routingStatus=production_ready/);
 });
 
 test("requested email avoids brand-name greeting and remains not confirmed", () => {
@@ -313,7 +327,7 @@ test("unable-to-confirm email apologises and refunds without customer-cancel bla
 
 test("ops notify mailbox may be info@wowatour.com; customer Reply-To stays hello@", () => {
   assert.equal(briksdal!.supplier.notificationEmail, "info@wowatour.com");
-  assert.equal(briksdal!.supplier.routingStatus, "preview_placeholder");
+  assert.equal(briksdal!.supplier.routingStatus, "production_ready");
   assert.equal(hellesyltBookingCore.bookingEmail, "hello@hellesyltshoreexcursions.com");
 
   const cruise = {
@@ -372,6 +386,6 @@ test("ops notify mailbox may be info@wowatour.com; customer Reply-To stays hello
     destinationLabel: "Hellesylt Shore Excursions, new booking request",
   });
   assert.match(ops.shell.destinationLabel, /Hellesylt/i);
-  assert.match(ops.body, /Fulfilment mode\nUNKNOWN|Fulfilment mode.*UNKNOWN/i);
+  assert.match(ops.body, /Fulfilment mode\nDIRECT_SUPPLIER_MANUAL|Fulfilment mode.*DIRECT_SUPPLIER_MANUAL/i);
   assert.doesNotMatch(ops.body, /SEG affiliate/i);
 });

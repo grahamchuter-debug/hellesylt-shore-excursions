@@ -12,8 +12,8 @@ import {
   liveCheckoutBlock,
   bookingsAreEnabled,
 } from "./live-gate";
-import { findHellesyltBookingProduct } from "../../../shared/destinations/hellesylt-products";
-import { findOldenBookingProduct } from "../../../shared/destinations/olden-products";
+import { findHellesyltBookingProduct, HELLESYLT_CANCELLATION_COPY } from "../../../shared/destinations/hellesylt-products";
+import { findOldenBookingProduct, OLDEN_CANCELLATION_COPY } from "../../../shared/destinations/olden-products";
 import { findBelizeBookingProduct } from "../../../shared/destinations/belize-regression";
 import { calculateBookingQuote, assertClientTotalMatches } from "../../../shared/world-booking";
 
@@ -153,6 +153,13 @@ test("Hellesylt prices are 16900/10900; Olden stub remains 9600/5600", () => {
   assert.equal(hellesylt.pricing.childAmount, 109);
   assert.equal(olden.pricing.adultAmount, 96);
   assert.equal(olden.pricing.childAmount, 56);
+});
+
+test("cancellation policy does not leak across destinations", () => {
+  assert.match(HELLESYLT_CANCELLATION_COPY.customerCancellation, /7 days/i);
+  assert.doesNotMatch(HELLESYLT_CANCELLATION_COPY.customerCancellation, /48 hours/i);
+  assert.match(OLDEN_CANCELLATION_COPY.customerCancellation, /48 hours/i);
+  assert.doesNotMatch(OLDEN_CANCELLATION_COPY.customerCancellation, /7 days/i);
 });
 
 test("client cannot force Olden EUR amount onto Hellesylt quote", () => {

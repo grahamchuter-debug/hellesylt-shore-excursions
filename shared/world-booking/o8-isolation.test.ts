@@ -77,7 +77,11 @@ test("commercial-config uses static NEXT_PUBLIC process.env members for client i
   const src = readFileSync(join(here, "../../src/lib/booking/commercial-config.ts"), "utf8");
   assert.match(src, /process\.env\.NEXT_PUBLIC_HELLESYLT_BOOKING_UI/);
   assert.match(src, /process\.env\.NEXT_PUBLIC_HELLESYLT_BOOKINGS_API_URL/);
+  assert.match(src, /process\.env\.NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL/);
   assert.doesNotMatch(src, /process\.env as EnvLike/);
+  // TEST Worker origin must not be hardcoded in client commercial-config.
+  assert.doesNotMatch(src, /hellesylt-bookings-test\.dark-violet/);
+  assert.doesNotMatch(src, /https:\/\/hellesylt-bookings-test/);
 });
 
 test("retention planner anonymises due contact and clears aged email payloads", () => {
