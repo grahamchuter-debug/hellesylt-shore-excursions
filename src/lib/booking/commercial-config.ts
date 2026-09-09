@@ -13,13 +13,13 @@
  *   NEXT_PUBLIC_HELLESYLT_TEST_BOOKINGS_API_URL=<isolated TEST Worker origin>
  *   → targets only the injected TEST Worker URL (see package.json *:booking-test)
  *
- * Future production unlock (explicit; not used by normal build/deploy):
+ * Production unlock (explicit; persist on Cloudflare Pages Production):
  *   NEXT_PUBLIC_HELLESYLT_BOOKING_UI=live
  *   NEXT_PUBLIC_HELLESYLT_BOOKINGS_API_URL=<production Worker origin>
  *   → fails closed if the production URL is missing or points at TEST
  *
- * Production deploys must NOT set those envs. Without them, status stays locked
- * and getHellesyltBookingsApiUrl() returns null (never a TEST Worker).
+ * Without those envs, status stays locked and getHellesyltBookingsApiUrl()
+ * returns null (never a TEST Worker).
  * The TEST Worker origin is never hardcoded in this module so default/live
  * client bundles cannot embed it.
  */

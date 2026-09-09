@@ -16,9 +16,9 @@
     }
   ],
   "vars": {
-    "PAYMENTS_MODE": "preview",
-    "BOOKINGS_ENABLED": "false",
-    "EMAIL_SENDING_ENABLED": "false",
+    "PAYMENTS_MODE": "live",
+    "BOOKINGS_ENABLED": "true",
+    "EMAIL_SENDING_ENABLED": "true",
     "EMAIL_FROM": "bookings@notifications.wowatour.com",
     "EMAIL_FROM_NAME": "Hellesylt Shore Excursions",
     "EMAIL_REPLY_TO": "hello@hellesyltshoreexcursions.com",

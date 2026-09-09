@@ -64,17 +64,16 @@ function jsonReq(path: string, body: unknown) {
   });
 }
 
-test("LIVE_PAYMENTS_CODE_ENABLED is false on Hellesylt Worker for H-1", () => {
-  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, false);
+test("LIVE_PAYMENTS_CODE_ENABLED is true on Hellesylt Worker after H-4 launch", () => {
+  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, true);
   assert.equal(LIVE_UNLOCK_PHRASE, "HELLESYLT_LIVE_UNLOCK");
 });
 
-test("live Checkout blocked when live code flag is off", () => {
+test("live Checkout blocked when LIVE_PAYMENTS_UNLOCK phrase is missing", () => {
   const product = findHellesyltBookingProduct("briksdal-glacier-discovery")!;
   const block = liveCheckoutBlock(
     {
       PAYMENTS_MODE: "live",
-      LIVE_PAYMENTS_UNLOCK: "HELLESYLT_LIVE_UNLOCK",
       BOOKINGS_ENABLED: "true",
       STRIPE_SECRET_KEY: "sk_live_FAKE_NOT_A_REAL_SECRET",
       STRIPE_WEBHOOK_SECRET: "whsec_FAKE",
@@ -84,15 +83,14 @@ test("live Checkout blocked when live code flag is off", () => {
     product,
   );
   assert.ok(block);
-  assert.equal(block!.code, "LIVE_PAYMENTS_BLOCKED");
+  assert.equal(block!.code, "LIVE_UNLOCK_REQUIRED");
 });
 
-test("live Checkout Worker path rejects when LIVE_PAYMENTS_CODE_ENABLED is false", async () => {
+test("live Checkout Worker path rejects when LIVE_PAYMENTS_UNLOCK is absent", async () => {
   const env = {
     ...previewEnv,
     PAYMENTS_MODE: "live",
     BOOKINGS_ENABLED: "true",
-    LIVE_PAYMENTS_UNLOCK: "HELLESYLT_LIVE_UNLOCK",
     STRIPE_SECRET_KEY: "sk_live_FAKE_NOT_A_REAL_SECRET",
     STRIPE_WEBHOOK_SECRET: "whsec_FAKE",
     SITE_BASE_URL: "https://hellesyltshoreexcursions.com",
@@ -100,7 +98,7 @@ test("live Checkout Worker path rejects when LIVE_PAYMENTS_CODE_ENABLED is false
   const response = await worker.fetch(jsonReq("/api/bookings/checkout", hellesyltPayload()), env);
   const data = (await response.json()) as { ok: boolean; code: string };
   assert.equal(data.ok, false);
-  assert.equal(data.code, "LIVE_PAYMENTS_BLOCKED");
+  assert.equal(data.code, "LIVE_UNLOCK_REQUIRED");
 });
 
 test("BOOKINGS_ENABLED=false still kills checkout even in test mode", async () => {

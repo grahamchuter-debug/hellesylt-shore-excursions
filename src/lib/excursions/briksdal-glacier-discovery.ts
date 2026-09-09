@@ -94,8 +94,8 @@ export const briksdalGlacierDiscoveryExcursion: ExcursionData = {
     },
   ],
   bookingHref: "/book/briksdal-glacier-discovery",
-  bookingLabel: "Request to book",
-  ctaTitle: "Request Briksdal Glacier Discovery",
+  bookingLabel: "Book now",
+  ctaTitle: "Book Briksdal Glacier Discovery",
   ctaText:
-    "Review the notes on this page, then request your places. Payment takes your request. Confirmation follows separately when online checkout is open.",
+    "Review the notes on this page, then continue to booking. Payment takes your request. Confirmation follows separately after we secure your places.",
 };

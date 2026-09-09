@@ -132,7 +132,11 @@ function walk(dir, out = []) {
 }
 
 const srcFiles = walk(path.join(root, "src"));
-const banned = [/BOOK NOW/i, /Book a Tour/, /Book this excursion/];
+const banned = [/Book a Tour/, /Book this excursion/];
+const bookNowBan = /BOOK NOW/i;
+const bookNowAllowed = new Set([
+  "src/lib/excursions/briksdal-glacier-discovery.ts",
+]);
 const paymentAllow =
   /(^|\/)(app\/book\/|components\/booking\/|lib\/booking\/)/;
 let bannedHits = 0;
@@ -144,6 +148,10 @@ for (const file of srcFiles) {
       bannedHits += 1;
       fail(`banned CTA pattern ${pattern} in ${rel}`);
     }
+  }
+  if (bookNowBan.test(text) && !bookNowAllowed.has(rel.replace(/\\/g, "/"))) {
+    bannedHits += 1;
+    fail(`banned CTA pattern ${bookNowBan} in ${rel}`);
   }
   if (/stripe|checkout\.session|payment.?intent/i.test(text) && !paymentAllow.test(rel.replace(/\\/g, "/"))) {
     bannedHits += 1;
@@ -159,10 +167,10 @@ if (!existsSync(liveGatePath)) {
   fail("workers/bookings/src/live-gate.ts missing");
 } else {
   const liveGate = readFileSync(liveGatePath, "utf8");
-  if (!/LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/.test(liveGate)) {
-    fail("LIVE_PAYMENTS_CODE_ENABLED must be false for H-1");
+  if (!/LIVE_PAYMENTS_CODE_ENABLED\s*=\s*true/.test(liveGate)) {
+    fail("LIVE_PAYMENTS_CODE_ENABLED must be true for H-4 public launch");
   } else {
-    pass("LIVE_PAYMENTS_CODE_ENABLED is false");
+    pass("LIVE_PAYMENTS_CODE_ENABLED is true");
   }
 }
 

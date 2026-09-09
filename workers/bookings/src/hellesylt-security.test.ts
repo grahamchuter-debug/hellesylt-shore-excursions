@@ -1,7 +1,7 @@
 /**
  * Hellesylt booking security / commercial gate tests (Phase H-1).
  * No live Stripe calls in unit tests. Uses Worker preview mode + shared pricing authority.
- * LIVE_PAYMENTS_CODE_ENABLED is false; other live gates still apply when the flag is later enabled.
+ * LIVE_PAYMENTS_CODE_ENABLED is true; other live gates (unlock, bookings, secrets) still apply.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -72,15 +72,15 @@ function jsonReq(url: string, body: unknown) {
   });
 }
 
-test("LIVE_PAYMENTS_CODE_ENABLED is false for Hellesylt H-1", () => {
-  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, false);
+test("LIVE_PAYMENTS_CODE_ENABLED is true for Hellesylt H-4 public launch", () => {
+  assert.equal(LIVE_PAYMENTS_CODE_ENABLED, true);
   assert.equal(LIVE_UNLOCK_PHRASE, "HELLESYLT_LIVE_UNLOCK");
 });
 
-test("liveCheckoutBlock blocks on live code flag before other gates", () => {
+test("production liveCheckoutBlock requires unlock even when code flag is on", () => {
   const product = findHellesyltBookingProduct(PRODUCT_ID)!;
   assert.equal(product.capacity.maxGuestsPerBookingSource, "approved");
-  const blocked = liveCheckoutBlock(
+  const ready = liveCheckoutBlock(
     {
       PAYMENTS_MODE: "live",
       LIVE_PAYMENTS_UNLOCK: "HELLESYLT_LIVE_UNLOCK",
@@ -92,9 +92,22 @@ test("liveCheckoutBlock blocks on live code flag before other gates", () => {
     },
     product,
   );
-  assert.ok(blocked);
-  assert.equal(blocked!.code, "LIVE_PAYMENTS_BLOCKED");
-  assert.notEqual(blocked!.code, "CAPACITY_UNAPPROVED");
+  assert.equal(ready, null);
+
+  const missingUnlock = liveCheckoutBlock(
+    {
+      PAYMENTS_MODE: "live",
+      BOOKINGS_ENABLED: "true",
+      STRIPE_SECRET_KEY: "sk_live_fake",
+      STRIPE_WEBHOOK_SECRET: "whsec_fake",
+      SITE_BASE_URL: "https://hellesyltshoreexcursions.com",
+      DB: {} as D1Database,
+    },
+    product,
+  );
+  assert.ok(missingUnlock);
+  assert.equal(missingUnlock!.code, "LIVE_UNLOCK_REQUIRED");
+  assert.notEqual(missingUnlock!.code, "CAPACITY_UNAPPROVED");
 });
 
 test("BOOKINGS_ENABLED=false kill switch", () => {
@@ -328,10 +341,10 @@ test("internal product notes keep costs unknown; no invented supplier nets", () 
   }
 });
 
-test("production live code flag disabled in live-gate source", () => {
+test("production live code flag enabled in live-gate source for H-4", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const src = readFileSync(join(here, "live-gate.ts"), "utf8");
-  assert.match(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/);
+  assert.match(src, /LIVE_PAYMENTS_CODE_ENABLED\s*=\s*true/);
   assert.match(src, /CAPACITY_UNAPPROVED/);
   assert.match(src, /maxGuestsPerBookingSource !== "approved"/);
   assert.match(src, /HELLESYLT_LIVE_UNLOCK/);
@@ -345,7 +358,7 @@ test("service name is hellesylt-bookings", () => {
   assert.match(src, /service:\s*["']hellesylt-bookings["']/);
 });
 
-test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler stays locked", () => {
+test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler keeps public live domain", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const testCfg = readFileSync(join(here, "../wrangler.jsonc"), "utf8");
   const prodCfg = readFileSync(join(here, "../wrangler.prod.jsonc"), "utf8");
@@ -356,9 +369,14 @@ test("TEST Worker SITE_BASE_URL is local-safe; prod wrangler stays locked", () =
   assert.match(testCfg, /"BOOKINGS_ENABLED":\s*"true"/);
   assert.match(prodCfg, /"name":\s*"hellesylt-bookings-prod"/);
   assert.match(prodCfg, /"SITE_BASE_URL":\s*"https:\/\/hellesyltshoreexcursions\.com"/);
-  assert.match(prodCfg, /"BOOKINGS_ENABLED":\s*"false"/);
-  assert.match(prodCfg, /"EMAIL_SENDING_ENABLED":\s*"false"/);
+  assert.match(prodCfg, /"PAYMENTS_MODE":\s*"live"/);
+  assert.match(prodCfg, /"BOOKINGS_ENABLED":\s*"true"/);
+  assert.match(prodCfg, /"EMAIL_SENDING_ENABLED":\s*"true"/);
   assert.match(prodCfg, /"EMAIL_REPLY_TO":\s*"hello@hellesyltshoreexcursions\.com"/);
+  assert.match(
+    prodCfg,
+    /"CORS_ALLOWED_ORIGINS":\s*"https:\/\/hellesyltshoreexcursions\.com,https:\/\/www\.hellesyltshoreexcursions\.com"/,
+  );
   assert.doesNotMatch(prodCfg, /oldenshoreexcursions|olden-bookings/);
   assert.doesNotMatch(testCfg, /oldenshoreexcursions|olden-bookings/);
   assert.doesNotMatch(prodCfg, /localhost:3000/);
