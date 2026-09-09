@@ -1,0 +1,727 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useRef, useState } from "react";
+
+import {
+  getHellesyltBookingsApiUrl,
+  hellesyltCommercialConfig,
+  isHellesyltBookingTestUiEnabled,
+  isPublicBookingEnabled,
+  resolveHellesyltPublicBookingStatus,
+} from "@/lib/booking/commercial-config";
+import {
+  formatScheduleDate,
+  getHellesyltEntriesForDate,
+  scheduleDisclaimer,
+  type HellesyltScheduleEntry,
+} from "@/lib/hellesylt-schedules";
+import { siteConfig } from "@/lib/site-config";
+import {
+  composeE164Phone,
+  DEFAULT_PHONE_DIAL_CODE,
+  openNativeDatePicker,
+  PHONE_DIAL_OPTIONS,
+} from "../../../shared/world-booking";
+
+const PRODUCT = hellesyltCommercialConfig.products["briksdal-glacier-discovery"];
+const GUEST_CEILING = PRODUCT.technicalGuestCeiling;
+
+type Step = "cruise" | "guests" | "details" | "review";
+type ShipChoice = "schedule" | "custom";
+
+function formatEuro(amount: number): string {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function todayIsoDate(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+const STEPS: { id: Step; label: string }[] = [
+  { id: "cruise", label: "Date / cruise" },
+  { id: "guests", label: "Guests" },
+  { id: "details", label: "Details" },
+  { id: "review", label: "Review" },
+];
+
+export function BriksdalDiscoveryBookingForm() {
+  const bookingLive = isPublicBookingEnabled(resolveHellesyltPublicBookingStatus());
+  const testUi = isHellesyltBookingTestUiEnabled();
+  const apiUrl = getHellesyltBookingsApiUrl();
+
+  const [step, setStep] = useState<Step>("cruise");
+  const [excursionDate, setExcursionDate] = useState("");
+  const [shipChoice, setShipChoice] = useState<ShipChoice>("schedule");
+  const [selectedShipKey, setSelectedShipKey] = useState("");
+  const [customShipName, setCustomShipName] = useState("");
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneDial, setPhoneDial] = useState(DEFAULT_PHONE_DIAL_CODE);
+  const [phoneNational, setPhoneNational] = useState("");
+  const dateInputRef = useRef<HTMLInputElement>(null);
+  const [notes, setNotes] = useState("");
+  const [hikingAck, setHikingAck] = useState(false);
+  const [leadAdultAck, setLeadAdultAck] = useState(false);
+  const [requestAck, setRequestAck] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const scheduleShips: HellesyltScheduleEntry[] = useMemo(
+    () => (excursionDate ? getHellesyltEntriesForDate(excursionDate) : []),
+    [excursionDate],
+  );
+
+  const selectedScheduleShip = scheduleShips.find(
+    (entry) => `${entry.ship}|${entry.arrival}|${entry.departure}` === selectedShipKey,
+  );
+
+  const shipName =
+    shipChoice === "custom"
+      ? customShipName.trim()
+      : selectedScheduleShip?.ship.trim() || "";
+
+  const cruiseLine =
+    shipChoice === "schedule" ? selectedScheduleShip?.cruiseLine || "" : "";
+  const scheduleMatched = shipChoice === "schedule" && Boolean(selectedScheduleShip);
+
+  const partyTotal = adults + children + infants;
+  const totalEur =
+    adults * PRODUCT.adultEur +
+    children * PRODUCT.childEur +
+    infants * PRODUCT.infantEur;
+
+  const underAdult = adults < 1;
+  const overTechnicalCeiling = partyTotal > GUEST_CEILING;
+
+  function go(next: Step) {
+    setError(null);
+    setStep(next);
+  }
+
+  function validateCruise(): string | null {
+    if (!excursionDate) return "Please choose your excursion date.";
+    if (excursionDate < todayIsoDate()) return "Please choose a future excursion date.";
+    if (shipChoice === "schedule") {
+      if (!scheduleShips.length) {
+        return "No ships are listed for that date. Choose “Ship not listed” and enter the name.";
+      }
+      if (!selectedScheduleShip) return "Please select your cruise ship.";
+    } else if (!customShipName.trim()) {
+      return "Please enter your cruise ship name.";
+    }
+    return null;
+  }
+
+  function validateGuests(): string | null {
+    if (underAdult) return "Please include at least one adult (12+).";
+    if (overTechnicalCeiling) {
+      return `Please keep the party to ${GUEST_CEILING} guests or fewer for an online request preview, or email ${hellesyltCommercialConfig.email}.`;
+    }
+    return null;
+  }
+
+  function validateDetails(): string | null {
+    if (!name.trim() || !email.trim()) {
+      return "Please complete your contact details.";
+    }
+    if (!composeE164Phone(phoneDial, phoneNational)) {
+      return "Please choose your country code and enter a valid Mobile / WhatsApp number.";
+    }
+    return null;
+  }
+
+  function onContinueFromCruise() {
+    const message = validateCruise();
+    if (message) {
+      setError(message);
+      return;
+    }
+    go("guests");
+  }
+
+  function onContinueFromGuests() {
+    const message = validateGuests();
+    if (message) {
+      setError(message);
+      return;
+    }
+    go("details");
+  }
+
+  function onContinueFromDetails() {
+    const message = validateDetails();
+    if (message) {
+      setError(message);
+      return;
+    }
+    go("review");
+  }
+
+  function onDateChange(value: string) {
+    setExcursionDate(value);
+    setSelectedShipKey("");
+    const ships = value ? getHellesyltEntriesForDate(value) : [];
+    if (ships.length === 1) {
+      const only = ships[0];
+      setShipChoice("schedule");
+      setSelectedShipKey(`${only.ship}|${only.arrival}|${only.departure}`);
+    } else if (ships.length === 0) {
+      setShipChoice("custom");
+    } else {
+      setShipChoice("schedule");
+    }
+  }
+
+  async function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+
+    if (!bookingLive) {
+      setError(
+        `Online requests are not open yet. Email ${hellesyltCommercialConfig.email} and we will help you manually.`,
+      );
+      return;
+    }
+
+    const cruiseError = validateCruise();
+    if (cruiseError) {
+      setError(cruiseError);
+      setStep("cruise");
+      return;
+    }
+    const guestsError = validateGuests();
+    if (guestsError) {
+      setError(guestsError);
+      setStep("guests");
+      return;
+    }
+    const detailsError = validateDetails();
+    if (detailsError) {
+      setError(detailsError);
+      setStep("details");
+      return;
+    }
+    if (!hikingAck) {
+      setError("Please acknowledge the hiking requirements before continuing to payment.");
+      return;
+    }
+    if (!leadAdultAck || !requestAck) {
+      setError("Please confirm the lead-traveller and request acknowledgements.");
+      return;
+    }
+
+    const operationalNotes = [
+      hikingAck ? "Hiking suitability acknowledged: yes (difficult activity level)" : "",
+      notes.trim(),
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    if (!apiUrl) {
+      setError(
+        `Online checkout is locked for this build. Email ${hellesyltCommercialConfig.email} for help.`,
+      );
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const response = await fetch(`${apiUrl}/api/bookings/checkout`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "idempotency-key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({
+          productId: PRODUCT.productId,
+          bookingSessionId: crypto.randomUUID(),
+          cruise: {
+            date: excursionDate,
+            shipName,
+            shipSlug: scheduleMatched ? "schedule-matched" : "not-listed",
+            cruiseLine,
+            isCustomShip: !scheduleMatched,
+            scheduleMatched,
+          },
+          guests: { adults, children, infants },
+          customer: {
+            name: name.trim(),
+            email: email.trim(),
+            phone: composeE164Phone(phoneDial, phoneNational) || "",
+            operationalNotes: operationalNotes || undefined,
+          },
+          confirmationAcknowledged: requestAck,
+          eligibilityAcknowledged: hikingAck,
+          clientDisplayedTotalCents: Math.round(totalEur * 100),
+        }),
+      });
+
+      const payload = (await response.json().catch(() => null)) as {
+        url?: string;
+        checkoutUrl?: string;
+        message?: string;
+        error?: string;
+        code?: string;
+        reference?: string;
+      } | null;
+
+      const checkoutUrl = payload?.url || payload?.checkoutUrl;
+      if (!response.ok || !checkoutUrl) {
+        setError(
+          payload?.message ||
+            payload?.error ||
+            "We could not start checkout. Please try again or contact us.",
+        );
+        setBusy(false);
+        return;
+      }
+
+      window.location.href = checkoutUrl;
+    } catch {
+      setError("Network error starting checkout. Please try again or contact us.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-8">
+      {testUi ? (
+        <div
+          role="status"
+          className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-4 text-sm leading-6 text-sky-950"
+        >
+          <p className="font-semibold">TEST booking UI</p>
+          <p className="mt-1">
+            Checkout targets the isolated TEST Worker only. This mode is not used
+            by normal production builds.
+          </p>
+        </div>
+      ) : null}
+
+      {!bookingLive ? (
+        <div
+          role="status"
+          className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950"
+        >
+          <p className="font-semibold">Online request checkout is production-locked</p>
+          <p className="mt-2">
+            You can review prices and requirements below. Live card payment is not
+            enabled on the public site. For help, email{" "}
+            <a
+              className="font-medium underline"
+              href={`mailto:${hellesyltCommercialConfig.email}?subject=Briksdal%20Glacier%20Discovery%20request`}
+            >
+              {hellesyltCommercialConfig.email}
+            </a>
+            .
+          </p>
+        </div>
+      ) : null}
+
+      <nav aria-label="Booking steps" className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
+        {STEPS.map((item, index) => {
+          const active = item.id === step;
+          const currentIndex = STEPS.findIndex((s) => s.id === step);
+          const done = index < currentIndex;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              disabled={!done && !active}
+              onClick={() => {
+                if (done) go(item.id);
+              }}
+              className={`rounded-full px-3 py-1.5 ${
+                active
+                  ? "bg-[var(--norway-blue)] text-white"
+                  : done
+                    ? "bg-slate-200 text-slate-800"
+                    : "bg-slate-100 text-slate-400"
+              }`}
+            >
+              {index + 1}. {item.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {step === "cruise" ? (
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-900">1. Date / cruise</h2>
+          <p className="text-sm text-slate-600">{scheduleDisclaimer}</p>
+          <label className="block text-sm font-medium text-slate-800">
+            Excursion date
+            <input
+              ref={dateInputRef}
+              type="date"
+              required
+              min={todayIsoDate()}
+              value={excursionDate}
+              onChange={(e) => onDateChange(e.target.value)}
+              onClick={(e) => openNativeDatePicker(e.currentTarget, { clickFallback: false })}
+              onFocus={(e) => openNativeDatePicker(e.currentTarget, { clickFallback: false })}
+              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            />
+          </label>
+
+          {excursionDate ? (
+            <div className="space-y-3">
+              {scheduleShips.length > 0 ? (
+                <>
+                  <p className="text-sm font-medium text-slate-800">
+                    Ships listed for {formatScheduleDate(excursionDate)}
+                  </p>
+                  <div className="space-y-2">
+                    {scheduleShips.map((entry) => {
+                      const key = `${entry.ship}|${entry.arrival}|${entry.departure}`;
+                      return (
+                        <label
+                          key={key}
+                          className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm"
+                        >
+                          <input
+                            type="radio"
+                            name="ship"
+                            checked={shipChoice === "schedule" && selectedShipKey === key}
+                            onChange={() => {
+                              setShipChoice("schedule");
+                              setSelectedShipKey(key);
+                            }}
+                            className="mt-1"
+                          />
+                          <span>
+                            <strong>{entry.ship}</strong>
+                            {entry.cruiseLine ? ` · ${entry.cruiseLine}` : ""}
+                            <br />
+                            <span className="text-slate-600">
+                              In {entry.arrival} · Out {entry.departure}
+                            </span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-slate-600">
+                  No published ship call for this date in our schedule import. Enter
+                  your ship name below.
+                </p>
+              )}
+
+              <label className="flex items-start gap-3 text-sm text-slate-800">
+                <input
+                  type="radio"
+                  name="ship"
+                  checked={shipChoice === "custom"}
+                  onChange={() => setShipChoice("custom")}
+                  className="mt-1"
+                />
+                <span className="w-full">
+                  Ship not listed / different ship
+                  <input
+                    type="text"
+                    value={customShipName}
+                    disabled={shipChoice !== "custom"}
+                    onChange={(e) => setCustomShipName(e.target.value)}
+                    placeholder="e.g. Regal Princess"
+                    className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 disabled:bg-slate-50"
+                  />
+                </span>
+              </label>
+            </div>
+          ) : null}
+
+          <div className="flex flex-wrap gap-3">
+            <button type="button" className="btn-primary" onClick={onContinueFromCruise}>
+              Continue to guests
+            </button>
+            <Link href={PRODUCT.productPath} className="btn-outline-dark">
+              Back to excursion
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {step === "guests" ? (
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-900">2. Guests</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <label className="block text-sm font-medium text-slate-800">
+              Adults (12+) · {formatEuro(PRODUCT.adultEur)}
+              <input
+                type="number"
+                min={1}
+                max={GUEST_CEILING}
+                value={adults}
+                onChange={(e) => setAdults(Number(e.target.value) || 0)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm font-medium text-slate-800">
+              Children (3 to 11) · {formatEuro(PRODUCT.childEur)}
+              <input
+                type="number"
+                min={0}
+                max={GUEST_CEILING}
+                value={children}
+                onChange={(e) => setChildren(Number(e.target.value) || 0)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm font-medium text-slate-800">
+              Infants (0 to 2) · FREE
+              <input
+                type="number"
+                min={0}
+                max={GUEST_CEILING}
+                value={infants}
+                onChange={(e) => setInfants(Number(e.target.value) || 0)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+          </div>
+          <p className="text-sm text-slate-600">
+            Party total: <strong>{partyTotal}</strong>
+            {PRODUCT.maxGuestsStatus === "UNKNOWN" ? (
+              <> · Online party size limit pending confirmation</>
+            ) : null}{" "}
+            · Display total <strong>{formatEuro(totalEur)}</strong> EUR (server
+            confirms the charge)
+          </p>
+          {overTechnicalCeiling ? (
+            <p className="text-sm text-red-700">
+              Please email{" "}
+              <Link href="/contact" className="content-link">
+                {hellesyltCommercialConfig.email}
+              </Link>{" "}
+              for larger groups.
+            </p>
+          ) : null}
+
+          <div className="flex flex-wrap gap-3">
+            <button type="button" className="btn-outline-dark" onClick={() => go("cruise")}>
+              Back
+            </button>
+            <button type="button" className="btn-primary" onClick={onContinueFromGuests}>
+              Continue to details
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      {step === "details" ? (
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-slate-900">3. Your details</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm font-medium text-slate-800 sm:col-span-2">
+              Lead traveller full name
+              <input
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm font-medium text-slate-800">
+              Email
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm font-medium text-slate-800 sm:col-span-2">
+              Mobile / WhatsApp
+              <span className="mt-1 flex flex-col gap-2 sm:flex-row">
+                <select
+                  required
+                  aria-label="Country dial code"
+                  value={phoneDial}
+                  onChange={(e) => setPhoneDial(e.target.value)}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 sm:max-w-[14rem]"
+                >
+                  {PHONE_DIAL_OPTIONS.map((option) => (
+                    <option key={`${option.iso}-${option.dial}`} value={option.dial}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  required
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  placeholder="Local mobile number"
+                  value={phoneNational}
+                  onChange={(e) => setPhoneNational(e.target.value)}
+                  className="w-full flex-1 rounded-lg border border-slate-300 px-3 py-2"
+                />
+              </span>
+              <span className="mt-1 block text-xs font-normal text-slate-500">
+                Include your country code so we can reach you on Mobile / WhatsApp. Stored as an
+                international number (for example +447700900123).
+              </span>
+            </label>
+            <label className="block text-sm font-medium text-slate-800 sm:col-span-2">
+              Notes / special requirements (optional)
+              <textarea
+                rows={3}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+              />
+            </label>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" className="btn-outline-dark" onClick={() => go("guests")}>
+              Back
+            </button>
+            <button type="button" className="btn-primary" onClick={onContinueFromDetails}>
+              Continue to review
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      {step === "review" ? (
+        <section className="space-y-4 rounded-xl border border-slate-200 bg-surface-muted p-5">
+          <h2 className="text-xl font-bold text-slate-900">4. Review and request</h2>
+          <p className="text-sm text-slate-600">
+            Payment receives your request. It does not confirm the excursion.
+            Confirmation is emailed separately after we arrange your places.
+          </p>
+          <dl className="grid gap-3 text-sm text-slate-800 sm:grid-cols-2">
+            <div>
+              <dt className="font-semibold text-slate-500">Excursion</dt>
+              <dd>
+                {PRODUCT.name} · {PRODUCT.durationLabel}
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-500">Date</dt>
+              <dd>{excursionDate ? formatScheduleDate(excursionDate) : "Not set"}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-500">Cruise ship</dt>
+              <dd>
+                {shipName || "Not set"}
+                {cruiseLine ? ` · ${cruiseLine}` : ""}
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-500">Guests</dt>
+              <dd>
+                {adults} adult · {children} child · {infants} infant
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-500">Price breakdown</dt>
+              <dd>
+                Adults {adults} × {formatEuro(PRODUCT.adultEur)}
+                <br />
+                Children {children} × {formatEuro(PRODUCT.childEur)}
+                <br />
+                Infants {infants} × FREE
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-slate-500">Total (EUR)</dt>
+              <dd className="text-lg font-bold">{formatEuro(totalEur)}</dd>
+            </div>
+          </dl>
+          <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+            <li>{hellesyltCommercialConfig.paymentNotConfirmation}</li>
+            <li>{hellesyltCommercialConfig.unableToConfirm}</li>
+            <li>{hellesyltCommercialConfig.meetingInstructions}</li>
+            <li>
+              Full customer cancellation terms will be confirmed before live
+              checkout opens.
+            </li>
+          </ul>
+
+          <label className="flex items-start gap-3 text-sm text-slate-800">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={hikingAck}
+              onChange={(e) => setHikingAck(e.target.checked)}
+            />
+            <span>
+              <strong>Hiking suitability:</strong> I understand this is a difficult
+              activity level excursion with hiking required at the glacier, and that
+              suitable footwear and weather clothing are recommended.
+            </span>
+          </label>
+          <label className="flex items-start gap-3 text-sm text-slate-800">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={leadAdultAck}
+              onChange={(e) => setLeadAdultAck(e.target.checked)}
+            />
+            <span>
+              I confirm the lead traveller is aged 18 or over and will be responsible
+              for this request.
+            </span>
+          </label>
+          <label className="flex items-start gap-3 text-sm text-slate-800">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={requestAck}
+              onChange={(e) => setRequestAck(e.target.checked)}
+            />
+            <span>
+              I understand payment takes my request and does not confirm the
+              excursion. Confirmation will be emailed separately when my places
+              are confirmed. If the excursion cannot be confirmed, the amount paid
+              will be refunded in full to my original payment method.
+            </span>
+          </label>
+
+          <div className="flex flex-wrap gap-3">
+            <button type="button" className="btn-outline-dark" onClick={() => go("details")}>
+              Back
+            </button>
+            <button
+              type="submit"
+              disabled={busy || overTechnicalCeiling || underAdult || !bookingLive}
+              className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {busy
+                ? "Starting checkout…"
+                : bookingLive
+                  ? `Pay ${formatEuro(totalEur)} and request`
+                  : "Online checkout locked"}
+            </button>
+            <Link href={`mailto:${siteConfig.contactEmail}`} className="btn-outline-dark">
+              Email {siteConfig.contactEmail}
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {error ? (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {error}
+        </p>
+      ) : null}
+    </form>
+  );
+}

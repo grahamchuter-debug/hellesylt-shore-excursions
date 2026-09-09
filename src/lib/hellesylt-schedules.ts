@@ -133,6 +133,14 @@ export function getHellesyltEntriesForMonthKey(monthKey: string): HellesyltSched
     .sort((a, b) => a.date.localeCompare(b.date) || a.ship.localeCompare(b.ship));
 }
 
+/** Ships calling Hellesylt on a single ISO date (YYYY-MM-DD). */
+export function getHellesyltEntriesForDate(isoDate: string): HellesyltScheduleEntry[] {
+  return payload.rows
+    .filter((row) => row.arrival_date === isoDate)
+    .map(toEntry)
+    .sort((a, b) => a.ship.localeCompare(b.ship));
+}
+
 export function getHellesyltMonthKeysWithCalls(): string[] {
   return [...new Set(payload.rows.map((row) => row.arrival_date.slice(0, 7)))].sort();
 }

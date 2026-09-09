@@ -1,0 +1,71 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+import { BookingReferenceBanner } from "@/components/booking/booking-reference-banner";
+import { ContentPage } from "@/components/content-page";
+import { imageAlts, siteImages } from "@/lib/site-images";
+import { buildPageMetadata } from "@/lib/site-metadata";
+
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: "Request received, Briksdal Glacier Discovery",
+    description:
+      "We have received your Briksdal Glacier Discovery excursion request. Confirmation follows separately.",
+    path: "/book/briksdal-glacier-discovery/received",
+    ogImage: siteImages.briksdalTour,
+    ogImageAlt: imageAlts.briksdalTourCard,
+  }),
+  robots: { index: false, follow: false },
+};
+
+export default function BriksdalDiscoveryReceivedPage() {
+  return (
+    <ContentPage
+      title="Request received"
+      lead="We've received your payment and your excursion request. This is not a booking confirmation."
+      heroImage={siteImages.briksdalTour}
+      heroImageAlt={imageAlts.briksdalTourCard}
+      pagePath="/book/briksdal-glacier-discovery/received"
+      pageDescription="Briksdal Glacier Discovery request received."
+      breadcrumbs={[
+        { label: "Home", href: "/" },
+        {
+          label: "Briksdal Glacier Discovery",
+          href: "/excursions/briksdal-glacier-discovery",
+        },
+        { label: "Request received" },
+      ]}
+      showShipReassurance={false}
+      relatedLinks={[
+        {
+          label: "Excursion notes",
+          href: "/excursions/briksdal-glacier-discovery",
+        },
+        { label: "Contact", href: "/contact" },
+      ]}
+    >
+      <section className="space-y-4 leading-7">
+        <p>
+          We&apos;ve received your payment and your excursion request. This is not
+          a booking confirmation. We&apos;re arranging your Briksdal Glacier
+          Discovery excursion and will email you again once it is confirmed.
+        </p>
+        <BookingReferenceBanner />
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Payment successful</li>
+          <li>Excursion request received, awaiting confirmation</li>
+          <li>We&apos;ll email you separately when the excursion is confirmed</li>
+          <li>
+            If we&apos;re unable to confirm your excursion, you&apos;ll receive a
+            full refund to your original payment method
+          </li>
+        </ul>
+        <p>
+          <Link href="/excursions/briksdal-glacier-discovery" className="content-link">
+            Return to excursion notes
+          </Link>
+        </p>
+      </section>
+    </ContentPage>
+  );
+}

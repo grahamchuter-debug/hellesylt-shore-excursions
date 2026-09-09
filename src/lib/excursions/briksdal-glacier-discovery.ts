@@ -93,6 +93,9 @@ export const briksdalGlacierDiscoveryExcursion: ExcursionData = {
       href: "/excursions/private-briksdal-glacier-discovery",
     },
   ],
-  bookingHref: "/excursions",
-  bookingLabel: "Explore this excursion",
+  bookingHref: "/book/briksdal-glacier-discovery",
+  bookingLabel: "Request to book",
+  ctaTitle: "Request Briksdal Glacier Discovery",
+  ctaText:
+    "Review the notes on this page, then request your places. Payment takes your request. Confirmation follows separately when online checkout is open.",
 };

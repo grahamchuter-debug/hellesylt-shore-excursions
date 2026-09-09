@@ -1,0 +1,36 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { siteConfig } from "@/lib/site-config";
+
+export function BookingReferenceBanner() {
+  const [reference, setReference] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get("ref");
+    if (raw && /^W2HSY-[A-Z0-9]+$/i.test(raw)) {
+      setReference(raw.toUpperCase());
+    }
+  }, []);
+
+  if (reference) {
+    return (
+      <p>
+        Booking reference: <strong>{reference}</strong>
+      </p>
+    );
+  }
+
+  return (
+    <p>
+      Keep your booking reference from the payment confirmation screen. If you
+      have questions, contact{" "}
+      <a className="content-link" href={`mailto:${siteConfig.contactEmail}`}>
+        {siteConfig.contactEmail}
+      </a>
+      .
+    </p>
+  );
+}

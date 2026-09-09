@@ -133,22 +133,56 @@ function walk(dir, out = []) {
 
 const srcFiles = walk(path.join(root, "src"));
 const banned = [/BOOK NOW/i, /Book a Tour/, /Book this excursion/];
+const paymentAllow =
+  /(^|\/)(app\/book\/|components\/booking\/|lib\/booking\/)/;
 let bannedHits = 0;
 for (const file of srcFiles) {
+  const rel = path.relative(root, file);
   const text = readFileSync(file, "utf8");
   for (const pattern of banned) {
     if (pattern.test(text)) {
       bannedHits += 1;
-      fail(`banned CTA pattern ${pattern} in ${path.relative(root, file)}`);
+      fail(`banned CTA pattern ${pattern} in ${rel}`);
     }
   }
-  if (/stripe|checkout\.session|payment.?intent/i.test(text)) {
+  if (/stripe|checkout\.session|payment.?intent/i.test(text) && !paymentAllow.test(rel.replace(/\\/g, "/"))) {
     bannedHits += 1;
-    fail(`payment infrastructure ref in ${path.relative(root, file)}`);
+    fail(`payment infrastructure ref in ${rel}`);
   }
 }
 if (bannedHits === 0) {
-  pass("no BOOK NOW / Book a Tour / Book this excursion / payment infra in src");
+  pass("no banned CTAs; payment infra confined to booking paths or absent");
+}
+
+const liveGatePath = path.join(root, "workers/bookings/src/live-gate.ts");
+if (!existsSync(liveGatePath)) {
+  fail("workers/bookings/src/live-gate.ts missing");
+} else {
+  const liveGate = readFileSync(liveGatePath, "utf8");
+  if (!/LIVE_PAYMENTS_CODE_ENABLED\s*=\s*false/.test(liveGate)) {
+    fail("LIVE_PAYMENTS_CODE_ENABLED must be false for H-1");
+  } else {
+    pass("LIVE_PAYMENTS_CODE_ENABLED is false");
+  }
+}
+
+const productPath = path.join(root, "shared/destinations/hellesylt-products.ts");
+if (!existsSync(productPath)) {
+  fail("shared/destinations/hellesylt-products.ts missing");
+} else {
+  const productSrc = readFileSync(productPath, "utf8");
+  if (!productSrc.includes('id: "briksdal-glacier-discovery"')) {
+    fail("Hellesylt product id missing");
+  } else if (!/adultChildEur\(\s*169\s*,\s*109\s*,\s*0\s*\)/.test(productSrc) && !/adultAmount:\s*169/.test(productSrc)) {
+    fail("Hellesylt adult/child/infant prices must be 169/109/0");
+  } else {
+    pass("Hellesylt product id and EUR 169/109/0 present");
+  }
+  if (!/maxGuestsPerBookingSource:\s*"preview_unapproved"/.test(productSrc)) {
+    fail("MAX guests must remain preview_unapproved until Graham supplies commercial max");
+  } else {
+    pass("max guests still preview_unapproved (UNKNOWN commercially)");
+  }
 }
 
 const chromeFiles = [

@@ -1,0 +1,36 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "hellesylt-bookings-test",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "dev": {
+    "ip": "localhost",
+    "port": 8795,
+    "local_protocol": "http"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hellesylt-bookings-test",
+      "database_id": "00000000-0000-4000-8000-000000000001",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "PAYMENTS_MODE": "test",
+    "BOOKINGS_ENABLED": "true",
+    "EMAIL_SENDING_ENABLED": "false",
+    "EMAIL_FROM": "bookings@notifications.wowatour.com",
+    "EMAIL_FROM_NAME": "Hellesylt Shore Excursions",
+    "EMAIL_REPLY_TO": "hello@hellesyltshoreexcursions.com",
+    "CORS_ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000,https://hellesyltshoreexcursions.com,https://www.hellesyltshoreexcursions.com",
+    "SITE_BASE_URL": "http://localhost:3000",
+    "ORIGINATING_SITE": "hellesyltshoreexcursions.com",
+    "ORIGINATING_PORT": "Hellesylt, Norway",
+    "OPERATOR_PORTAL_BASE_URL": "https://hellesylt-bookings-test.example"
+  }
+}
