@@ -28,13 +28,14 @@ const rows = data.rows || [];
 const integrity = data.integrity || {};
 
 const expected = {
-  total: 98,
+  total: 126,
   y2026: 63,
   y2027: 35,
+  y2028: 28,
   first: "2026-06-01",
-  last: "2027-10-05",
-  ships: 14,
-  lines: 9,
+  last: "2028-10-03",
+  ships: 15,
+  lines: 10,
 };
 
 if (data.port !== "hellesylt") {
@@ -79,10 +80,10 @@ if (integrity.cruiseLines !== expected.lines) {
   pass(`cruise lines ${expected.lines}`);
 }
 
-if (integrity.has2028 || rows.some((r) => String(r.arrival_date).startsWith("2028"))) {
-  fail("2028 schedule data present");
+if ((integrity.byYear?.["2028"] ?? 0) !== 28 || !integrity.has2028) {
+  fail(`2028 ${integrity.byYear?.["2028"]}, expected 28`);
 } else {
-  pass("no 2028 schedule data");
+  pass(`2028 calls 28`);
 }
 
 const required = [
@@ -350,8 +351,14 @@ const expectedMonths = [
   "2027-08",
   "2027-09",
   "2027-10",
+  "2028-05",
+  "2028-06",
+  "2028-07",
+  "2028-08",
+  "2028-09",
+  "2028-10"
 ];
-if (monthKeys.length !== 11 || monthKeys.join(",") !== expectedMonths.join(",")) {
+if (monthKeys.length !== 17 || monthKeys.join(",") !== expectedMonths.join(",")) {
   fail(`populated months ${monthKeys.join(",")}, expected ${expectedMonths.join(",")}`);
 } else {
   pass("11 populated Hellesylt months match authority keys");

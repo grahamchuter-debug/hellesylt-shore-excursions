@@ -59,8 +59,9 @@ export default function ShipScheduleHubPage() {
         <p className="mt-4 text-base leading-7 text-slate-700">
           This local timetable is filtered from the Norway Shore Excursions master
           schedule: {hellesyltScheduleIntegrity.total} Hellesylt calls,{" "}
-          {hellesyltScheduleIntegrity.byYear["2026"] ?? 0} in 2026 and{" "}
-          {hellesyltScheduleIntegrity.byYear["2027"] ?? 0} in 2027, across{" "}
+          {hellesyltScheduleIntegrity.byYear["2026"] ?? 0} in 2026,{" "}
+          {hellesyltScheduleIntegrity.byYear["2027"] ?? 0} in 2027 and{" "}
+          {hellesyltScheduleIntegrity.byYear["2028"] ?? 0} in 2028, across{" "}
           {hellesyltScheduleIntegrity.uniqueShips} ships.
         </p>
       </section>
